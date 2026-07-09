@@ -203,10 +203,6 @@ Output/Results/P2_Exp11_FineTuneDepthAblation_Results.mat
 
 This script exports numerical ablation results but does not write a manuscript figure.
 
-## Optional supplementary control
-
-`Sup01_real_Rgression_Head.m` compares MLP, Ridge, GPR, and SVR heads using frozen mean-pooled CNN features. It is an optional fixed-feature control and is not part of the main L2-SP attention workflow.
-
 ## Repository policy
 
 Raw target data and MATLAB scripts are version-controlled. Generated `Output/` and `Figures/` directories remain local and are excluded from GitHub.

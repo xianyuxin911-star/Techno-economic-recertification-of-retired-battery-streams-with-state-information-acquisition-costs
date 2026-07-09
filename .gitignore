@@ -14,3 +14,6 @@
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Local supplementary control excluded from the public repository
+Part2_Target-domain_Prediction/Sup01_real_Rgression_Head.m
