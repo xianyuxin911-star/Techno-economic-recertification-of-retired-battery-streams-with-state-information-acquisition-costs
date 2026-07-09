@@ -23,12 +23,65 @@ P1_Exp02_SourceDomain_CNNTraining_CV.m
         └── Extended Data Fig. 1b
 ```
 
-## Script-to-result and figure mapping
+## Code-to-result map
 
-| Run order | MATLAB script | Main operation | Generated data/results | Manuscript figure |
-|---:|---|---|---|---|
-| 1 | `P1_Exp01_SourceDomain_QVPreprocessing.m` | Reads the source-domain `MAP*.mat` files, extracts Step-7 discharge Q–V curves over the normalized-capacity window 0.70–0.86, resamples each curve to 512 points, and constructs the CNN training dataset. | `Output/Data/P1_SourceDomain_Dataset.mat` | Supplementary Fig. 1: `Figures/Supplementary/SupFig01_SourceDomain_QVCurves.png` |
-| 2 | `P1_Exp02_SourceDomain_CNNTraining_CV.m` | Trains and evaluates the source-domain CNN using five-fold cross-validation, then fits the final model on all valid source-domain samples. | `Output/Models/P1_SourceDomain_CNN_Model.mat`<br>`Output/Results/P1_SourceDomain_CVPredictions.csv`<br>`Output/Results/P1_SourceDomain_CVMetrics.csv` | Extended Data Fig. 1b: `Figures/Extended/ExD01b_SourceDomainPredictionPerformance.png` |
+### Step 1 — Preprocess the source-domain data
+
+**Run**
+
+```matlab
+P1_Exp01_SourceDomain_QVPreprocessing
+```
+
+**Reads**
+
+```text
+Source_Data/MAP*.mat
+```
+
+**Produces**
+
+```text
+Output/Data/P1_SourceDomain_Dataset.mat
+```
+
+**Reproduces**
+
+> **Supplementary Fig. 1 — Source-domain Q–V curves**  
+> `Figures/Supplementary/SupFig01_SourceDomain_QVCurves.png`
+
+The script extracts Step-7 discharge Q–V curves over the normalized-capacity window 0.70–0.86, resamples each curve to 512 points, and constructs the source-domain CNN dataset.
+
+---
+
+### Step 2 — Train and evaluate the source-domain CNN
+
+**Run**
+
+```matlab
+P1_Exp02_SourceDomain_CNNTraining_CV
+```
+
+**Reads**
+
+```text
+Output/Data/P1_SourceDomain_Dataset.mat
+```
+
+**Produces**
+
+```text
+Output/Models/P1_SourceDomain_CNN_Model.mat
+Output/Results/P1_SourceDomain_CVPredictions.csv
+Output/Results/P1_SourceDomain_CVMetrics.csv
+```
+
+**Reproduces**
+
+> **Extended Data Fig. 1b — Source-domain prediction performance**  
+> `Figures/Extended/ExD01b_SourceDomainPredictionPerformance.png`
+
+The script performs five-fold cross-validation, exports sample- and fold-level prediction results, and trains the final source-domain CNN used by Parts 2 and 3.
 
 Both figures are also saved as editable MATLAB `.fig` files in the same figure directories.
 
