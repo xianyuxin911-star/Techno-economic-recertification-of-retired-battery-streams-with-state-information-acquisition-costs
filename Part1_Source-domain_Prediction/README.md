@@ -1,0 +1,152 @@
+# Part 1 — Source-domain SOH Prediction
+
+## Purpose
+
+Part 1 constructs the source-domain battery dataset and trains the cell-level convolutional neural network (CNN) used by the downstream transfer-learning experiments.
+
+The two scripts must be run in numerical order:
+
+```text
+Raw source-domain MAT files
+        │
+        ▼
+P1_Exp01_SourceDomain_QVPreprocessing.m
+        │
+        ├── Processed source-domain dataset
+        └── Supplementary Fig. 1
+        │
+        ▼
+P1_Exp02_SourceDomain_CNNTraining_CV.m
+        │
+        ├── Source-domain CNN model
+        ├── Cross-validation predictions and metrics
+        └── Extended Data Fig. 1b
+```
+
+## Script-to-result and figure mapping
+
+| Run order | MATLAB script | Main operation | Generated data/results | Manuscript figure |
+|---:|---|---|---|---|
+| 1 | `P1_Exp01_SourceDomain_QVPreprocessing.m` | Reads the source-domain `MAP*.mat` files, extracts Step-7 discharge Q–V curves over the normalized-capacity window 0.70–0.86, resamples each curve to 512 points, and constructs the CNN training dataset. | `Output/Data/P1_SourceDomain_Dataset.mat` | Supplementary Fig. 1: `Figures/Supplementary/SupFig01_SourceDomain_QVCurves.png` |
+| 2 | `P1_Exp02_SourceDomain_CNNTraining_CV.m` | Trains and evaluates the source-domain CNN using five-fold cross-validation, then fits the final model on all valid source-domain samples. | `Output/Models/P1_SourceDomain_CNN_Model.mat`<br>`Output/Results/P1_SourceDomain_CVPredictions.csv`<br>`Output/Results/P1_SourceDomain_CVMetrics.csv` | Extended Data Fig. 1b: `Figures/Extended/ExD01b_SourceDomainPredictionPerformance.png` |
+
+Both figures are also saved as editable MATLAB `.fig` files in the same figure directories.
+
+## Input data
+
+### `Source_Data/`
+
+This directory contains 96 source-domain battery MAT files:
+
+```text
+MAP150919190000001.mat ... MAP150919190000048.mat
+MAP151007190000001.mat ... MAP151007190000048.mat
+```
+
+`P1_Exp01_SourceDomain_QVPreprocessing.m` searches this directory for files matching `MAP*.mat`.
+
+## Script details
+
+### 1. `P1_Exp01_SourceDomain_QVPreprocessing.m`
+
+This script:
+
+1. Loads each source-domain battery file from `Source_Data/`.
+2. Locates the target discharge step (`Target_Step = 7`).
+3. Extracts voltage as a function of normalized capacity.
+4. Retains the normalized-capacity window from 0.70 to 0.86.
+5. Interpolates every valid Q–V curve to 512 points.
+6. Saves the processed dataset for CNN training.
+7. Plots the source-domain Q–V curves coloured by SOH.
+
+#### Generated dataset
+
+```text
+Output/Data/P1_SourceDomain_Dataset.mat
+```
+
+The MAT file contains:
+
+| Variable | Description |
+|---|---|
+| `Train_X` | Resampled source-domain Q–V input features |
+| `Train_Y` | Cell-level SOH labels |
+| `SN_List` | Battery serial-number identifiers |
+| `cfg` | Preprocessing configuration |
+
+#### Manuscript figure
+
+```text
+Figures/Supplementary/SupFig01_SourceDomain_QVCurves.png
+```
+
+**Corresponds to Supplementary Fig. 1.**  
+The figure displays the normalized-capacity Q–V curves of the source-domain cells, with curve colour indicating SOH.
+
+### 2. `P1_Exp02_SourceDomain_CNNTraining_CV.m`
+
+This script:
+
+1. Loads `Output/Data/P1_SourceDomain_Dataset.mat`.
+2. Performs five-fold cross-validation with a fixed random seed (`seed = 42`).
+3. Trains the source-domain CNN and generates out-of-fold SOH predictions.
+4. Calculates fold-level prediction metrics.
+5. Trains the final source-domain CNN using all valid samples.
+6. Saves the model used by Part 2 and Part 3.
+7. Generates the source-domain prediction-performance figure.
+
+#### Generated model
+
+```text
+Output/Models/P1_SourceDomain_CNN_Model.mat
+```
+
+The saved model file contains the final network, normalization parameters, configuration, fold metrics, labels, and out-of-fold predictions. Part 2 loads this model for target-domain transfer learning.
+
+#### Generated numerical results
+
+```text
+Output/Results/P1_SourceDomain_CVPredictions.csv
+Output/Results/P1_SourceDomain_CVMetrics.csv
+```
+
+| Result file | Description |
+|---|---|
+| `P1_SourceDomain_CVPredictions.csv` | Sample-level true SOH, cross-validated predicted SOH, and prediction error |
+| `P1_SourceDomain_CVMetrics.csv` | Prediction metrics for the five cross-validation folds |
+
+#### Manuscript figure
+
+```text
+Figures/Extended/ExD01b_SourceDomainPredictionPerformance.png
+```
+
+**Corresponds to Extended Data Fig. 1b.**  
+The figure combines:
+
+- a true-versus-predicted SOH parity plot;
+- the distribution of true SOH;
+- the cross-validation prediction-error distribution.
+
+## How to run
+
+Open MATLAB, change the current folder to `Part1_Source-domain_Prediction`, and run:
+
+```matlab
+P1_Exp01_SourceDomain_QVPreprocessing
+P1_Exp02_SourceDomain_CNNTraining_CV
+```
+
+The scripts automatically create the required `Output/` and `Figures/` subdirectories.
+
+## Dependencies and downstream use
+
+- `P1_Exp02_SourceDomain_CNNTraining_CV.m` requires the dataset generated by `P1_Exp01_SourceDomain_QVPreprocessing.m`.
+- Part 2 loads `Output/Models/P1_SourceDomain_CNN_Model.mat` for target-domain prediction and transfer learning.
+- Part 3 also uses the source-domain model during nested-resampling experiments.
+- MATLAB Deep Learning Toolbox is required for CNN training.
+- Statistics and Machine Learning Toolbox is used for statistical evaluation and density estimation.
+
+## Repository policy
+
+The source MATLAB scripts and raw battery data are version-controlled. Generated `Output/` and `Figures/` directories remain local and are excluded from GitHub through the root `.gitignore`.
