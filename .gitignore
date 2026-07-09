@@ -1,0 +1,16 @@
+# Generated numerical results, models, checkpoints, and processed data
+**/Output/
+
+# Generated manuscript and supplementary figures
+**/Figures/
+*.fig
+
+# MATLAB temporary and autosave files
+*.asv
+*.autosave
+*.m~
+
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+desktop.ini
