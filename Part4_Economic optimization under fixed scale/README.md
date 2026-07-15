@@ -195,7 +195,6 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 > `Figures/Supplementary/SupFig19a_LFP_gray_zone_Eta1_trigger_rate_composition.png` through  
 > `Figures/Supplementary/SupFig19f_LFP_gray_zone_fixed_vs_reoptimized_Eta2.png`
 
-## Figure-numbering note
 
 ## Extended Data Fig. 6 panel assignment
 

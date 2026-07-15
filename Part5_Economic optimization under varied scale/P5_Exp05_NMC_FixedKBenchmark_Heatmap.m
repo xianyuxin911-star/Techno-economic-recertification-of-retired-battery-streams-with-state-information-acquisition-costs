@@ -424,7 +424,7 @@ catch
 end
 
 cb = colorbar(ax, 'northoutside');
-cb.Label.String = 'Fixed-k policy regret (kUSD)';
+cb.Label.String = 'Non-optimal policy additional cost (kUSD)';
 cb.Label.FontName = 'Arial';
 cb.FontName = 'Arial';
 cb.FontSize = 9;
@@ -473,7 +473,7 @@ set(ax, 'YTickLabel', arrayfun(@(k) sprintf('Fixed k = %d', k), ...
 xlabel('Battery scale (ton)', 'FontName', 'Arial', 'FontSize', 10);
 ylabel('Fixed-k policy', 'FontName', 'Arial', 'FontSize', 10);
 
-title('NMC fixed-k policy regret', ...
+title('NMC fixed-k additional-cost benchmark', ...
  'FontName', 'Arial', ...
  'FontSize', 11, ...
  'FontWeight', 'normal');

@@ -158,8 +158,6 @@ This script extends throughput scenarios to 500,000 tons. It is an exploratory n
 
 ## Figure-numbering note
 
-## Figure-numbering note
-
 `P5_Exp06` produces Extended Data Fig. 6e–f. Extended Data Fig. 6a–d are produced by the corresponding fixed-scale benchmark and SOH-label-cost sensitivity scripts in Part 4.
 ## Repository policy
 
