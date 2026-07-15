@@ -64,12 +64,6 @@ cfg.png_PM = fullfile(cfg.ext_fig_dir, 'ExD03d_PM_fit.png');
 cfg.fig_sigR = fullfile(cfg.ext_fig_dir, 'ExD03e_sigmaR_fit.fig');
 cfg.png_sigR = fullfile(cfg.ext_fig_dir, 'ExD03e_sigmaR_fit.png');
 
-% Diagnostic figure comparing the fixed-region probability P_R with the
-% alternative right-component weights. This figure is for method checking
-% and is not automatically assigned to the manuscript.
-cfg.fig_w_diag = fullfile(cfg.ext_fig_dir, 'P3_Exp03_w_PR_diagnostic.fig');
-cfg.png_w_diag = fullfile(cfg.ext_fig_dir, 'P3_Exp03_w_PR_diagnostic.png');
-
 cfg.dist_dir = fullfile(cfg.ext_fig_dir, 'ExD03a_residual_distribution_k05_to_k25');
 
 % Empirical and extrapolation settings.
@@ -1157,51 +1151,6 @@ xlim([cfg.k_emp_min, cfg.k_extrap_max]);
 
 local_save_figure(fig_sigR, cfg.fig_sigR, cfg.png_sigR, cfg.png_resolution);
 
-%% 13.1) Diagnostic comparison of P_R and right-component weights
-fig_w_diag = figure( ...
- 'Color', 'w', ...
- 'Position', [225, 225, 760, 520], ...
- 'Name', 'P3_Exp03_w_PR_diagnostic');
-
-hold on;
-grid on;
-box on;
-
-plot(k_vals, PR_curve, 'k-', ...
- 'LineWidth', 2.2, ...
- 'DisplayName', 'P_R fit: fixed-region mass');
-
-plot(k_vals, w_proxy_curve, '--', ...
- 'LineWidth', 1.5, ...
- 'DisplayName', 'Initial proxy: w = P_R');
-
-plot(k_vals, w_legacy_effective_curve, '-.', ...
- 'LineWidth', 1.8, ...
- 'DisplayName', 'Legacy effective w');
-
-plot(k_vals, w_region_curve, '-', ...
- 'LineWidth', 2.2, ...
- 'DisplayName', 'Region-consistent w');
-
-xlabel('k', 'FontSize', 12, 'FontName', 'Arial');
-ylabel('Probability or component weight', 'FontSize', 12, 'FontName', 'Arial');
-title('Diagnostic comparison of P_R and right-component weight w', ...
- 'FontSize', 13, ...
- 'FontName', 'Arial', ...
- 'FontWeight', 'normal');
-
-legend('Location', 'northeast', 'Box', 'off', 'FontSize', 10);
-
-set(gca, ...
- 'FontSize', 11, ...
- 'FontName', 'Arial', ...
- 'LineWidth', 1.0, ...
- 'TickDir', 'out', ...
- 'GridLineStyle', ':', ...
- 'GridAlpha', 0.25);
-
-xlim([cfg.k_emp_min, cfg.k_extrap_max]);
-local_save_figure(fig_w_diag, cfg.fig_w_diag, cfg.png_w_diag, cfg.png_resolution);
 
 %% 14) Additional panel: RMSE scaling-law extrapolation
 fig_RMSE = figure( ...
@@ -1448,7 +1397,6 @@ fprintf('>>> Saved ExD03b: %s\n', cfg.png_RMSE);
 fprintf('>>> Saved ExD03c: %s\n', cfg.png_PR);
 fprintf('>>> Saved ExD03d: %s\n', cfg.png_PM);
 fprintf('>>> Saved ExD03e: %s\n', cfg.png_sigR);
-fprintf('>>> Saved w/P_R diagnostic: %s\n', cfg.png_w_diag);
 fprintf('>>> Saved ExD03a folder: %s\n', cfg.dist_dir);
 
 fprintf('\n================ Part3 Exp03 completed ================\n');

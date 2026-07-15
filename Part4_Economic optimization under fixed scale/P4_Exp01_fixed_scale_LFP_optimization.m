@@ -380,8 +380,8 @@ Pi_True = [calc_V_reuse(s_true), calc_V_refurbish(s_true), calc_V_recycle(s_true
 % Legacy alias retained for compatibility with existing saved workspaces.
 True_Action_i = PerfectInfo_Action_i; %#ok<NASGU>
 
-T1_grid = 0.4 : 0.005 : 0.5;
-T2_grid = 0.85 : 0.005 : 1;
+T1_grid = 0.4 : 0.001 : 0.5;
+T2_grid = 0.85 : 0.001 : 1;
 
 E_L_base = zeros(length(k_vals), 1);
 O_base = zeros(length(k_vals), 1);

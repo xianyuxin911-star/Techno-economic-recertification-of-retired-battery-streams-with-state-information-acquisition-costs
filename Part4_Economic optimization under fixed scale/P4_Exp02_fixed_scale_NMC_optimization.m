@@ -392,10 +392,10 @@ Pi_True = [
 
 [Pi_True_Max, PerfectInfo_Action_i] = max(Pi_True, [], 2);
 % Legacy alias retained for compatibility with older result readers.
-True_Action_i = PerfectInfo_Action_i; %#ok<NASGU>
+True_Action_i = PerfectInfo_Action_i; 
 
-T1_grid = 0.70:0.005:0.80;
-T2_grid = 0.85:0.005:0.98;
+T1_grid = 0.73:0.001:0.80;
+T2_grid = 0.90:0.001:0.98;
 
 E_L_base = nan(numel(k_vals), 1);
 O_base = nan(numel(k_vals), 1);
