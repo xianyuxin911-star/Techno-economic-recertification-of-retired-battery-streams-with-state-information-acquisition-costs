@@ -126,19 +126,21 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 
 ---
 
-### Step 7 — LFP SOH-testing-cost sensitivity
+### Step 7 — LFP SOH-label-cost sensitivity
 
-**Run:** `P4_Exp07_LFP_SOH_Label_Cost_Sensitivity`
+**Run:** `P4_Exp07_LFP_SOH_Label_Cost_Sensitivity.m`
 
-**Reads:** `P4_Exp01_FixedScale_LFP_Workspace.mat`
+**Reads:** `P4_Exp01_FixedScale_LFP_Results.mat`, with the corresponding workspace file accepted as a fallback.
 
-**Produces:** summary, all-\(k\), and MAT results under `Output/Results/P4_Exp07_*`.
+**Produces:** summary, all-k, and MAT result files under `Output/Results/P4_Exp07_*`.
 
-**Reproduces**
+**Reproduces:**
 
-> **Extended Data Fig. 6a–b — Testing-cost sensitivity and cost decomposition**  
-> `Figures/Extended/ExD06a_LFP_SOH_testing_cost_sensitivity.png`  
-> `Figures/Extended/ExD06b_LFP_SOH_testing_cost_cost_decomposition.png`
+- **Extended Data Fig. 6c:** LFP SOH-label-cost sensitivity  
+  `Figures/Extended/ExD06c_LFP_SOH_label_cost_sensitivity.png`
+
+- **Extended Data Fig. 6d:** Optimized cost decomposition under varying SOH-label costs  
+  `Figures/Extended/ExD06d_LFP_SOH_label_cost_decomposition.png`
 
 ---
 
@@ -195,7 +197,18 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 
 ## Figure-numbering note
 
-The code currently uses `ExD06a` and `ExD06b` for both the fixed-\(k\) regret benchmarks (`P4_Exp04`–`P4_Exp05`) and the LFP testing-cost sensitivity figures (`P4_Exp07`). The filenames above reproduce the identifiers embedded in the scripts; these labels should be reconciled with the final manuscript numbering before publication.
+## Extended Data Fig. 6 panel assignment
+
+The panels of Extended Data Fig. 6 are assigned as follows:
+
+- **Extended Data Fig. 6a:** LFP fixed-scale fixed-k benchmark (`P4_Exp04`)
+- **Extended Data Fig. 6b:** NMC fixed-scale fixed-k benchmark (`P4_Exp05`)
+- **Extended Data Fig. 6c:** LFP SOH-label-cost sensitivity (`P4_Exp07`)
+- **Extended Data Fig. 6d:** LFP optimized cost decomposition under varying SOH-label costs (`P4_Exp07`)
+- **Extended Data Fig. 6e:** LFP scale-dependent fixed-k additional cost per pack (`P5_Exp06`)
+- **Extended Data Fig. 6f:** NMC scale-dependent fixed-k additional cost per pack (`P5_Exp06`)
+
+The figure identifiers used by the current MATLAB scripts are consistent with this panel assignment.
 
 ## Repository policy
 
