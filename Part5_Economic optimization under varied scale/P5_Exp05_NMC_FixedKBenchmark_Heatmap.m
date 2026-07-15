@@ -20,7 +20,7 @@ cfg = struct();
 script_dir = fileparts(mfilename('fullpath'));
 
 if isempty(script_dir)
-    script_dir = pwd;
+ script_dir = pwd;
 end
 
 cfg.output_dir = fullfile(script_dir, 'Output');
@@ -46,13 +46,20 @@ cfg.png_resolution = 600;
 % Benchmark settings.
 benchmark_k = [5; 15; 25; 35; 50];
 
+% Each benchmark fixes k but retains the T1 and T2 values that were
+% re-optimized conditional on that k in Part5 Exp02.
+benchmark_definition = ...
+ 'Fixed k with T1 and T2 re-optimized conditional on k';
+
+cost_tolerance_USD = 1e-7;
+
 % Plot settings.
 show_cell_values = false;
 use_log_color = true;
 
 % Plot unit: kUSD.
-color_floor_kUSD = 1e-1;      % 0.1 kUSD = 100 USD
-color_ceiling_kUSD = [];      % Empty means automatically determined.
+color_floor_kUSD = 1e-1; % 0.1 kUSD = 100 USD
+color_ceiling_kUSD = []; % Empty means automatically determined.
 
 % Use "sky" if your MATLAB version supports it.
 % If your MATLAB reports an error for colormap("sky"), change this to "parula".
@@ -63,28 +70,28 @@ colormap_name = "sky";
 folder_list = {cfg.results_dir, cfg.figure_root, cfg.main_fig_dir};
 for ii = 1:numel(folder_list)
 
-    if ~exist(folder_list{ii}, 'dir')
-        mkdir(folder_list{ii});
-    end
+ if ~exist(folder_list{ii}, 'dir')
+ mkdir(folder_list{ii});
+ end
 end
 
 %% 2. Locate and load NMC scale-dependent result
 
 if isfile(cfg.nmc_result_primary)
 
-    cfg.input_file = cfg.nmc_result_primary;
+ cfg.input_file = cfg.nmc_result_primary;
 
 elseif isfile(cfg.nmc_result_legacy)
 
-    cfg.input_file = cfg.nmc_result_legacy;
+ cfg.input_file = cfg.nmc_result_legacy;
 
 else
 
-    error(['NMC scale-dependent result file not found.\n' ...
-        'Checked:\n%s\n%s\n' ...
-        'Please run Part5 Exp02 first.'], ...
-        cfg.nmc_result_primary, ...
-        cfg.nmc_result_legacy);
+ error(['NMC scale-dependent result file not found.\n' ...
+ 'Checked:\n%s\n%s\n' ...
+ 'Please run Part5 Exp02 first.'], ...
+ cfg.nmc_result_primary, ...
+ cfg.nmc_result_legacy);
 end
 
 fprintf('================ P5 Exp05 NMC fixed-k benchmark ================\n');
@@ -100,53 +107,53 @@ field_names = fieldnames(S);
 
 for ii = 1:numel(field_names)
 
-    field_now = field_names{ii};
+ field_now = field_names{ii};
 
-    if isstruct(S.(field_now)) && ...
-            (isfield(S.(field_now), 'scale_ton_list') || ...
-             isfield(S.(field_now), 'scale_ton_list_NMC')) && ...
-            (isfield(S.(field_now), 'Total_Cost_NK_NMC') || ...
-             isfield(S.(field_now), 'Total_Cost_NK'))
+ if isstruct(S.(field_now)) && ...
+ (isfield(S.(field_now), 'scale_ton_list') || ...
+ isfield(S.(field_now), 'scale_ton_list_NMC')) && ...
+ (isfield(S.(field_now), 'Total_Cost_NK_NMC') || ...
+ isfield(S.(field_now), 'Total_Cost_NK'))
 
-        R = S.(field_now);
-        fprintf('Using result structure: %s\n', field_now);
-        break;
-    end
+ R = S.(field_now);
+ fprintf('Using result structure: %s\n', field_now);
+ break;
+ end
 end
 
 %% 3. Read required variables
 
 if isfield(R, 'scale_ton_list_NMC')
-    scale_ton_list = R.scale_ton_list_NMC(:);
+ scale_ton_list = R.scale_ton_list_NMC(:);
 elseif isfield(R, 'scale_ton_list')
-    scale_ton_list = R.scale_ton_list(:);
+ scale_ton_list = R.scale_ton_list(:);
 else
-    error('scale_ton_list is missing from the NMC scale-dependent result.');
+ error('scale_ton_list is missing from the NMC scale-dependent result.');
 end
 
 if isfield(R, 'k_vals')
-    k_vals = R.k_vals(:);
+ k_vals = R.k_vals(:);
 else
-    error('k_vals is missing from the NMC scale-dependent result.');
+ error('k_vals is missing from the NMC scale-dependent result.');
 end
 
 if isfield(R, 'N_list_NMC')
-    N_list = R.N_list_NMC(:);
+ N_list = R.N_list_NMC(:);
 elseif isfield(R, 'N_list')
-    N_list = R.N_list(:);
+ N_list = R.N_list(:);
 elseif isfield(R, 'scale_pack_list_NMC')
-    N_list = R.scale_pack_list_NMC(:);
+ N_list = R.scale_pack_list_NMC(:);
 else
-    error(['Pack-number list is missing from the NMC scale-dependent result. ' ...
-        'Expected N_list_NMC, N_list, or scale_pack_list_NMC.']);
+ error(['Pack-number list is missing from the NMC scale-dependent result. ' ...
+ 'Expected N_list_NMC, N_list, or scale_pack_list_NMC.']);
 end
 
 if isfield(R, 'Total_Cost_NK_NMC')
-    Total_Cost_NK = R.Total_Cost_NK_NMC;
+ Total_Cost_NK = R.Total_Cost_NK_NMC;
 elseif isfield(R, 'Total_Cost_NK')
-    Total_Cost_NK = R.Total_Cost_NK;
+ Total_Cost_NK = R.Total_Cost_NK;
 else
-    error('Total_Cost_NK_NMC is missing from the NMC scale-dependent result.');
+ error('Total_Cost_NK_NMC is missing from the NMC scale-dependent result.');
 end
 
 scale_ton_list = double(scale_ton_list);
@@ -164,82 +171,84 @@ Total_Cost_NK = squeeze(Total_Cost_NK);
 
 if isequal(size(Total_Cost_NK), [n_scale, n_k])
 
-    fprintf('Cost matrix orientation: scale x k\n');
+ fprintf('Cost matrix orientation: scale x k\n');
 
 elseif isequal(size(Total_Cost_NK), [n_k, n_scale])
 
-    Total_Cost_NK = Total_Cost_NK.';
-    fprintf('Cost matrix orientation: k x scale, transposed to scale x k\n');
+ Total_Cost_NK = Total_Cost_NK.';
+ fprintf('Cost matrix orientation: k x scale, transposed to scale x k\n');
 
 else
 
-    error(['Unexpected Total_Cost_NK size: [%d, %d]. Expected [%d, %d] ' ...
-        'or [%d, %d].'], ...
-        size(Total_Cost_NK, 1), size(Total_Cost_NK, 2), ...
-        n_scale, n_k, n_k, n_scale);
+ error(['Unexpected Total_Cost_NK size: [%d, %d]. Expected [%d, %d] ' ...
+ 'or [%d, %d].'], ...
+ size(Total_Cost_NK, 1), size(Total_Cost_NK, 2), ...
+ n_scale, n_k, n_k, n_scale);
 end
 
 if numel(N_list) ~= n_scale
-    error('The length of N_list is inconsistent with scale_ton_list.');
+ error('The length of N_list is inconsistent with scale_ton_list.');
 end
 
 %% 5. Determine optimized policy cost
 
-% Derive optimized policy from the saved scale-by-k cost matrix.
-[opt_total_cost_derived, opt_k_idx_derived] = min(Total_Cost_NK, [], 2);
+% The row-wise minimum of the saved scale-by-k matrix is the authoritative
+% optimized policy for this benchmark.
+[opt_total_cost, opt_k_idx] = min(Total_Cost_NK, [], 2);
+opt_k = k_vals(opt_k_idx);
+opt_cost_per_pack = opt_total_cost ./ N_list;
 
-opt_k_derived = k_vals(opt_k_idx_derived);
+% Saved optimum vectors are used only as consistency diagnostics.
+saved_opt_cost = [];
+saved_opt_k = [];
 
-% Prefer saved NMC optimized costs if available, but check consistency.
 if isfield(R, 'opt_total_cost_NMC')
-    opt_total_cost = double(R.opt_total_cost_NMC(:));
-    opt_total_cost_source = 'opt_total_cost_NMC';
+ saved_opt_cost = double(R.opt_total_cost_NMC(:));
 elseif isfield(R, 'opt_total_cost')
-    opt_total_cost = double(R.opt_total_cost(:));
-    opt_total_cost_source = 'opt_total_cost';
-else
-    opt_total_cost = opt_total_cost_derived;
-    opt_total_cost_source = 'derived from Total_Cost_NK';
-end
-
-if numel(opt_total_cost) ~= n_scale
-    error('The length of optimized total cost is inconsistent with scale_ton_list.');
+ saved_opt_cost = double(R.opt_total_cost(:));
 end
 
 if isfield(R, 'opt_k_NMC')
-    opt_k = double(R.opt_k_NMC(:));
-    opt_k_source = 'opt_k_NMC';
+ saved_opt_k = double(R.opt_k_NMC(:));
 elseif isfield(R, 'opt_k')
-    opt_k = double(R.opt_k(:));
-    opt_k_source = 'opt_k';
+ saved_opt_k = double(R.opt_k(:));
+end
+
+if ~isempty(saved_opt_cost)
+ if numel(saved_opt_cost) ~= n_scale
+ error('The saved optimized total-cost vector has an inconsistent length.');
+ end
+
+ max_saved_cost_diff = max(abs(saved_opt_cost - opt_total_cost));
+ cost_ref = max(1, max(abs(opt_total_cost)));
+
+ if max_saved_cost_diff > 1e-8 * cost_ref
+ error(['The saved optimized NMC costs do not match the row-wise ' ...
+ 'minimum of Total_Cost_NK. Rerun the Part5 Exp02.']);
+ end
 else
-    opt_k = opt_k_derived;
-    opt_k_source = 'derived from Total_Cost_NK';
+ max_saved_cost_diff = NaN;
 end
 
-if numel(opt_k) ~= n_scale
-    error('The length of optimized k is inconsistent with scale_ton_list.');
+if ~isempty(saved_opt_k)
+ if numel(saved_opt_k) ~= n_scale
+ error('The saved optimized-k vector has an inconsistent length.');
+ end
+
+ if any(saved_opt_k ~= opt_k)
+ error(['The saved optimized NMC k sequence does not match the ' ...
+ 'row-wise minimizer of Total_Cost_NK. Rerun Part5 Exp02.']);
+ end
 end
-
-opt_cost_per_pack = opt_total_cost ./ N_list;
-
-max_cost_diff = max(abs(opt_total_cost - opt_total_cost_derived));
-cost_ref = max(1, max(abs(opt_total_cost)));
 
 fprintf('>>> NMC scale points: %d\n', n_scale);
 fprintf('>>> k range: %.0f to %.0f\n', min(k_vals), max(k_vals));
-fprintf('>>> Optimized cost source: %s\n', opt_total_cost_source);
-fprintf('>>> Optimized k source: %s\n', opt_k_source);
-fprintf('>>> Max |saved/used optimized cost - matrix minimum| = %.6g USD\n', max_cost_diff);
 fprintf('>>> Benchmark k values:\n');
 disp(benchmark_k.');
 fprintf('>>> Optimized k sequence:\n');
 disp(opt_k.');
-
-if max_cost_diff > 1e-5 * cost_ref
-    warning(['Saved/used optimized costs differ from the minimum of Total_Cost_NK. ' ...
-        'Please check whether the NMC result file is internally consistent.']);
-end
+fprintf('>>> Max saved-versus-derived optimized cost difference: %.6g USD\n', ...
+ max_saved_cost_diff);
 
 %% 6. Extract fixed-k benchmark policies
 
@@ -254,37 +263,42 @@ benchmark_k_idx = zeros(n_benchmark, 1);
 
 for bb = 1:n_benchmark
 
-    k_ref = benchmark_k(bb);
+ k_ref = benchmark_k(bb);
 
-    idx_now = find(k_vals == k_ref, 1, 'first');
+ idx_now = find(k_vals == k_ref, 1, 'first');
 
-    if isempty(idx_now)
-        error('Benchmark k = %.0f is not available in k_vals.', k_ref);
-    end
+ if isempty(idx_now)
+ error('Benchmark k = %.0f is not available in k_vals.', k_ref);
+ end
 
-    benchmark_k_idx(bb) = idx_now;
+ benchmark_k_idx(bb) = idx_now;
 
-    benchmark_cost(:, bb) = Total_Cost_NK(:, idx_now);
-    benchmark_cost_per_pack(:, bb) = benchmark_cost(:, bb) ./ N_list;
+ benchmark_cost(:, bb) = Total_Cost_NK(:, idx_now);
+ benchmark_cost_per_pack(:, bb) = benchmark_cost(:, bb) ./ N_list;
 
-    additional_cost(:, bb) = benchmark_cost(:, bb) - opt_total_cost;
-    additional_cost_per_pack(:, bb) = additional_cost(:, bb) ./ N_list;
+ additional_cost(:, bb) = benchmark_cost(:, bb) - opt_total_cost;
+ additional_cost_per_pack(:, bb) = additional_cost(:, bb) ./ N_list;
 
-    relative_saving_percent(:, bb) = ...
-        100 .* additional_cost(:, bb) ./ max(benchmark_cost(:, bb), eps);
+ relative_saving_percent(:, bb) = ...
+ 100 .* additional_cost(:, bb) ./ max(benchmark_cost(:, bb), eps);
 end
 
-% Numerical cleanup.
-additional_cost(abs(additional_cost) < 1e-9) = 0;
+% A fixed-k policy cannot outperform the row-wise optimized policy.
+if any(additional_cost(:) < -cost_tolerance_USD)
+ error(['At least one fixed-k benchmark is lower than the row-wise ' ...
+ 'optimized NMC cost. Check Total_Cost_NK and its k-axis ordering.']);
+end
+
+% Remove only floating-point round-off below zero.
+additional_cost(additional_cost < 0 & ...
+ additional_cost >= -cost_tolerance_USD) = 0;
+
+additional_cost_per_pack = additional_cost ./ N_list;
+relative_saving_percent = ...
+ 100 .* additional_cost ./ max(benchmark_cost, eps);
+
 additional_cost_per_pack(abs(additional_cost_per_pack) < 1e-12) = 0;
 relative_saving_percent(abs(relative_saving_percent) < 1e-10) = 0;
-
-negative_tol = 1e-6 * max(1, max(abs(opt_total_cost)));
-
-if any(additional_cost(:) < -negative_tol)
-    warning(['Some fixed-k benchmark costs are lower than the optimized policy cost. ' ...
-        'Please check Total_Cost_NK and opt_total_cost_NMC.']);
-end
 
 additional_cost_million = additional_cost ./ 1e6;
 additional_cost_kUSD = additional_cost ./ 1000;
@@ -310,53 +324,53 @@ row_start = 1;
 
 for bb = 1:n_benchmark
 
-    row_end = row_start + n_scale - 1;
+ row_end = row_start + n_scale - 1;
 
-    Reference_k_col(row_start:row_end) = benchmark_k(bb);
-    Reference_total_cost_col(row_start:row_end) = benchmark_cost(:, bb);
-    Reference_cost_per_pack_col(row_start:row_end) = benchmark_cost_per_pack(:, bb);
-    Additional_cost_col(row_start:row_end) = additional_cost(:, bb);
-    Additional_cost_kUSD_col(row_start:row_end) = additional_cost_kUSD(:, bb);
-    Additional_cost_million_col(row_start:row_end) = additional_cost_million(:, bb);
-    Additional_cost_per_pack_col(row_start:row_end) = additional_cost_per_pack(:, bb);
-    Relative_saving_percent_col(row_start:row_end) = relative_saving_percent(:, bb);
+ Reference_k_col(row_start:row_end) = benchmark_k(bb);
+ Reference_total_cost_col(row_start:row_end) = benchmark_cost(:, bb);
+ Reference_cost_per_pack_col(row_start:row_end) = benchmark_cost_per_pack(:, bb);
+ Additional_cost_col(row_start:row_end) = additional_cost(:, bb);
+ Additional_cost_kUSD_col(row_start:row_end) = additional_cost_kUSD(:, bb);
+ Additional_cost_million_col(row_start:row_end) = additional_cost_million(:, bb);
+ Additional_cost_per_pack_col(row_start:row_end) = additional_cost_per_pack(:, bb);
+ Relative_saving_percent_col(row_start:row_end) = relative_saving_percent(:, bb);
 
-    row_start = row_end + 1;
+ row_start = row_end + 1;
 end
 
-P5_Exp05_NMC_FixedKBenchmark_Table  = table( ...
-    Scale_ton_col, ...
-    Pack_number_col, ...
-    Optimized_k_col, ...
-    Optimized_total_cost_col, ...
-    Optimized_cost_per_pack_col, ...
-    Reference_k_col, ...
-    Reference_total_cost_col, ...
-    Reference_cost_per_pack_col, ...
-    Additional_cost_col, ...
-    Additional_cost_kUSD_col, ...
-    Additional_cost_million_col, ...
-    Additional_cost_per_pack_col, ...
-    Relative_saving_percent_col, ...
-    'VariableNames', { ...
-    'Scale_ton', ...
-    'Pack_number', ...
-    'Optimized_k', ...
-    'Optimized_total_cost_USD', ...
-    'Optimized_cost_per_pack_USD', ...
-    'Reference_k', ...
-    'Reference_total_cost_USD', ...
-    'Reference_cost_per_pack_USD', ...
-    'Additional_cost_USD', ...
-    'Additional_cost_kUSD', ...
-    'Additional_cost_million_USD', ...
-    'Additional_cost_per_pack_USD', ...
-    'Relative_saving_percent'});
+P5_Exp05_NMC_FixedKBenchmark_Table = table( ...
+ Scale_ton_col, ...
+ Pack_number_col, ...
+ Optimized_k_col, ...
+ Optimized_total_cost_col, ...
+ Optimized_cost_per_pack_col, ...
+ Reference_k_col, ...
+ Reference_total_cost_col, ...
+ Reference_cost_per_pack_col, ...
+ Additional_cost_col, ...
+ Additional_cost_kUSD_col, ...
+ Additional_cost_million_col, ...
+ Additional_cost_per_pack_col, ...
+ Relative_saving_percent_col, ...
+ 'VariableNames', { ...
+ 'Scale_ton', ...
+ 'Pack_number', ...
+ 'Optimized_k', ...
+ 'Optimized_total_cost_USD', ...
+ 'Optimized_cost_per_pack_USD', ...
+ 'Reference_k', ...
+ 'Reference_total_cost_USD', ...
+ 'Reference_cost_per_pack_USD', ...
+ 'Additional_cost_USD', ...
+ 'Additional_cost_kUSD', ...
+ 'Additional_cost_million_USD', ...
+ 'Additional_cost_per_pack_USD', ...
+ 'Relative_saving_percent'});
 
 disp(' ');
 disp('========== P5 Exp05 NMC fixed-k benchmark table preview ==========');
 disp(P5_Exp05_NMC_FixedKBenchmark_Table ( ...
-    1:min(12, height(P5_Exp05_NMC_FixedKBenchmark_Table )), :));
+ 1:min(12, height(P5_Exp05_NMC_FixedKBenchmark_Table )), :));
 
 %% 8. Prepare heat map matrix for log color scale
 
@@ -367,46 +381,46 @@ plot_matrix_kUSD = additional_cost_kUSD.';
 
 if use_log_color
 
-    plot_matrix_kUSD(plot_matrix_kUSD <= 0) = color_floor_kUSD;
+ plot_matrix_kUSD(plot_matrix_kUSD <= 0) = color_floor_kUSD;
 end
 
 max_plot_kUSD = max(plot_matrix_kUSD(:));
 
 if isempty(color_ceiling_kUSD)
 
-    if max_plot_kUSD <= color_floor_kUSD
-        color_ceiling_kUSD = 10 * color_floor_kUSD;
-    else
-        base_exp = floor(log10(max_plot_kUSD));
-        base_val = 10^base_exp;
-        ratio_now = max_plot_kUSD / base_val;
+ if max_plot_kUSD <= color_floor_kUSD
+ color_ceiling_kUSD = 10 * color_floor_kUSD;
+ else
+ base_exp = floor(log10(max_plot_kUSD));
+ base_val = 10^base_exp;
+ ratio_now = max_plot_kUSD / base_val;
 
-        if ratio_now <= 2
-            color_ceiling_kUSD = 2 * base_val;
-        elseif ratio_now <= 5
-            color_ceiling_kUSD = 5 * base_val;
-        else
-            color_ceiling_kUSD = 10 * base_val;
-        end
-    end
+ if ratio_now <= 2
+ color_ceiling_kUSD = 2 * base_val;
+ elseif ratio_now <= 5
+ color_ceiling_kUSD = 5 * base_val;
+ else
+ color_ceiling_kUSD = 10 * base_val;
+ end
+ end
 end
 
 %% 9. Plot Main Fig. 5g heat map
 
 fig_heatmap = figure('Name', 'P5 Exp05 - NMC fixed-k benchmark heat map', ...
-    'Color', 'w', ...
-    'Units', 'centimeters', ...
-    'Position', [4, 4, 18, 6.2]);
+ 'Color', 'w', ...
+ 'Units', 'centimeters', ...
+ 'Position', [4, 4, 18, 6.2]);
 
 imagesc(plot_matrix_kUSD);
 
 ax = gca;
 
 try
-    colormap(colormap_name);
+ colormap(colormap_name);
 catch
-    warning('Colormap "%s" is not supported. Falling back to parula.', colormap_name);
-    colormap(parula);
+ warning('Colormap "%s" is not supported. Falling back to parula.', colormap_name);
+ colormap(parula);
 end
 
 cb = colorbar(ax, 'northoutside');
@@ -418,51 +432,51 @@ cb.TickLabelInterpreter = 'tex';
 
 if use_log_color
 
-    set(ax, 'ColorScale', 'log');
-    caxis([color_floor_kUSD, color_ceiling_kUSD]);
+ set(ax, 'ColorScale', 'log');
+ caxis([color_floor_kUSD, color_ceiling_kUSD]);
 
-    tick_exp_min = ceil(log10(color_floor_kUSD));
-    tick_exp_max = floor(log10(color_ceiling_kUSD));
+ tick_exp_min = ceil(log10(color_floor_kUSD));
+ tick_exp_max = floor(log10(color_ceiling_kUSD));
 
-    colorbar_ticks = 10.^(tick_exp_min:tick_exp_max);
+ colorbar_ticks = 10.^(tick_exp_min:tick_exp_max);
 
-    if isempty(colorbar_ticks)
-        colorbar_ticks = [color_floor_kUSD, color_ceiling_kUSD];
-    end
+ if isempty(colorbar_ticks)
+ colorbar_ticks = [color_floor_kUSD, color_ceiling_kUSD];
+ end
 
-    cb.Ticks = colorbar_ticks;
-    cb.TickLabels = arrayfun(@(x) sprintf('10^{%d}', round(log10(x))), ...
-        colorbar_ticks, 'UniformOutput', false);
+ cb.Ticks = colorbar_ticks;
+ cb.TickLabels = arrayfun(@(x) sprintf('10^{%d}', round(log10(x))), ...
+ colorbar_ticks, 'UniformOutput', false);
 
 else
 
-    caxis([0, max(additional_cost_kUSD(:))]);
+ caxis([0, max(additional_cost_kUSD(:))]);
 end
 
 set(ax, ...
-    'FontName', 'Arial', ...
-    'FontSize', 9, ...
-    'LineWidth', 0.8, ...
-    'TickDir', 'out', ...
-    'TickLength', [0.004, 0.004]);
+ 'FontName', 'Arial', ...
+ 'FontSize', 9, ...
+ 'LineWidth', 0.8, ...
+ 'TickDir', 'out', ...
+ 'TickLength', [0.004, 0.004]);
 
 box on;
 
 set(ax, 'XTick', 1:n_scale);
 set(ax, 'XTickLabel', arrayfun(@(x) sprintf('%.0f', x), ...
-    scale_ton_list, 'UniformOutput', false));
+ scale_ton_list, 'UniformOutput', false));
 
 set(ax, 'YTick', 1:n_benchmark);
 set(ax, 'YTickLabel', arrayfun(@(k) sprintf('Fixed k = %d', k), ...
-    benchmark_k, 'UniformOutput', false));
+ benchmark_k, 'UniformOutput', false));
 
 xlabel('Battery scale (ton)', 'FontName', 'Arial', 'FontSize', 10);
 ylabel('Fixed-k policy', 'FontName', 'Arial', 'FontSize', 10);
 
 title('NMC fixed-k policy regret', ...
-    'FontName', 'Arial', ...
-    'FontSize', 11, ...
-    'FontWeight', 'normal');
+ 'FontName', 'Arial', ...
+ 'FontSize', 11, ...
+ 'FontWeight', 'normal');
 
 xtickangle(45);
 
@@ -470,33 +484,33 @@ xtickangle(45);
 
 if show_cell_values
 
-    if use_log_color
-        color_mid = sqrt(color_floor_kUSD * color_ceiling_kUSD);
-    else
-        color_mid = mean(caxis);
-    end
+ if use_log_color
+ color_mid = sqrt(color_floor_kUSD * color_ceiling_kUSD);
+ else
+ color_mid = mean(caxis);
+ end
 
-    for bb = 1:n_benchmark
+ for bb = 1:n_benchmark
 
-        for ss = 1:n_scale
+ for ss = 1:n_scale
 
-            value_now = additional_cost_kUSD(ss, bb);
-            plot_value_now = plot_matrix_kUSD(bb, ss);
+ value_now = additional_cost_kUSD(ss, bb);
+ plot_value_now = plot_matrix_kUSD(bb, ss);
 
-            if plot_value_now >= color_mid
-                text_color = 'w';
-            else
-                text_color = 'k';
-            end
+ if plot_value_now >= color_mid
+ text_color = 'w';
+ else
+ text_color = 'k';
+ end
 
-            text(ss, bb, sprintf('%.2f', value_now), ...
-                'HorizontalAlignment', 'center', ...
-                'VerticalAlignment', 'middle', ...
-                'FontName', 'Arial', ...
-                'FontSize', 7.5, ...
-                'Color', text_color);
-        end
-    end
+ text(ss, bb, sprintf('%.2f', value_now), ...
+ 'HorizontalAlignment', 'center', ...
+ 'VerticalAlignment', 'middle', ...
+ 'FontName', 'Arial', ...
+ 'FontSize', 7.5, ...
+ 'Color', text_color);
+ end
+ end
 end
 
 %% 11. Save figure and data
@@ -504,31 +518,33 @@ end
 savefig(fig_heatmap, cfg.output_fig);
 
 exportgraphics(fig_heatmap, cfg.output_png, ...
-    'Resolution', cfg.png_resolution, ...
-    'BackgroundColor', 'white');
+ 'Resolution', cfg.png_resolution, ...
+ 'BackgroundColor', 'white');
 
 writetable(P5_Exp05_NMC_FixedKBenchmark_Table, cfg.output_table_csv);
 
 save(cfg.output_data_mat, ...
-    'cfg', ...
-    'scale_ton_list', ...
-    'N_list', ...
-    'k_vals', ...
-    'benchmark_k', ...
-    'benchmark_k_idx', ...
-    'Total_Cost_NK', ...
-    'opt_total_cost', ...
-    'opt_cost_per_pack', ...
-    'opt_k', ...
-    'benchmark_cost', ...
-    'benchmark_cost_per_pack', ...
-    'additional_cost', ...
-    'additional_cost_million', ...
-    'additional_cost_kUSD', ...
-    'additional_cost_per_pack', ...
-    'relative_saving_percent', ...
-    'plot_matrix_kUSD', ...
-    'P5_Exp05_NMC_FixedKBenchmark_Table');
+ 'cfg', ...
+ 'benchmark_definition', ...
+ 'cost_tolerance_USD', ...
+ 'scale_ton_list', ...
+ 'N_list', ...
+ 'k_vals', ...
+ 'benchmark_k', ...
+ 'benchmark_k_idx', ...
+ 'Total_Cost_NK', ...
+ 'opt_total_cost', ...
+ 'opt_cost_per_pack', ...
+ 'opt_k', ...
+ 'benchmark_cost', ...
+ 'benchmark_cost_per_pack', ...
+ 'additional_cost', ...
+ 'additional_cost_million', ...
+ 'additional_cost_kUSD', ...
+ 'additional_cost_per_pack', ...
+ 'relative_saving_percent', ...
+ 'plot_matrix_kUSD', ...
+ 'P5_Exp05_NMC_FixedKBenchmark_Table');
 
 %% 12. Print key values
 
@@ -536,17 +552,17 @@ fprintf('================ P5 Exp05 NMC fixed-k benchmark ================\n');
 
 for bb = 1:n_benchmark
 
-    [max_total_additional_cost, idx_max] = max(additional_cost(:, bb));
+ [max_total_additional_cost, idx_max] = max(additional_cost(:, bb));
 
-    fprintf('Fixed k = %d:\n', benchmark_k(bb));
-    fprintf('  Maximum fixed-k policy regret: %.4f kUSD at %.0f tons\n', ...
-        max_total_additional_cost / 1000, scale_ton_list(idx_max));
-    fprintf('  Fixed-k policy regret at largest scale %.0f tons: %.4f kUSD\n', ...
-        scale_ton_list(end), additional_cost(end, bb) / 1000);
+ fprintf('Fixed k = %d:\n', benchmark_k(bb));
+ fprintf(' Maximum fixed-k policy regret: %.4f kUSD at %.0f tons\n', ...
+ max_total_additional_cost / 1000, scale_ton_list(idx_max));
+ fprintf(' Fixed-k policy regret at largest scale %.0f tons: %.4f kUSD\n', ...
+ scale_ton_list(end), additional_cost(end, bb) / 1000);
 end
 
 fprintf('\nSaved table: %s\n', cfg.output_table_csv);
-fprintf('Saved data:  %s\n', cfg.output_data_mat);
+fprintf('Saved data: %s\n', cfg.output_data_mat);
 fprintf('Saved figure FIG: %s\n', cfg.output_fig);
 fprintf('Saved figure PNG: %s\n', cfg.output_png);
 

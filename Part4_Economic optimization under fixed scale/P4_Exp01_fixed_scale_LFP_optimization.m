@@ -170,9 +170,14 @@ C0 = 92;      % baseline labor, disassembly, and inspection cost
 C1 = 65;      % material replacement and deep-repair cost coefficient
 gamma = 3;    % nonlinear degradation exponent for refurbishment difficulty
 
-Lambda_R = 15;    Lambda_A = 12;
-% Risk penalty is applied to over-optimistic action assignment.
-% Manual review penalty is applied once the value-loss tolerance is exceeded.
+Lambda_R = 15;    Lambda_H = 12;
+% Lambda_R scales the risk penalty for over-optimistic pathway assignment.
+% Lambda_H is the fixed mismatch-handling and rework cost incurred for an
+% economically consequential pathway mismatch. It does not represent an
+% ex-ante review that corrects the pathway before opportunity loss occurs.
+%
+% Legacy alias retained for compatibility with older downstream scripts.
+Lambda_A = Lambda_H;
 
 
 % 1.1 Hydrometallurgical recycling economics and physicochemical parameters
@@ -355,39 +360,60 @@ fprintf('Loaded k range: %d to %d\n', min(k_vals), max(k_vals));
 N_sim = cfg.N_sim;
 rng(cfg.random_seed);
 
+% Common random numbers reused across k values.
 base_u    = rand(N_sim, 1);
 base_z    = randn(N_sim, 1);
 base_pick = rand(N_sim, 1);
 
+% Preserve the original SOH Monte Carlo sequence. The independent bridge
+% selector uses a separate stream so that adding it does not shift s_true.
+s_true = 0.4 + 0.6 * rand(N_sim, 1);
+bridge_stream = RandStream('mt19937ar', ...
+    'Seed', cfg.random_seed + 1001);
+base_bridge = rand(bridge_stream, N_sim, 1);
 
 fprintf('>>> Running dense k-grid search from k = %d to %d...\n', ...
     min(k_vals), max(k_vals));
 
-N_sim = cfg.N_sim;
-s_true = 0.4 + 0.6*rand(N_sim,1);
-
 Pi_True = [calc_V_reuse(s_true), calc_V_refurbish(s_true), calc_V_recycle(s_true)];
-[Pi_True_Max, True_Action_i] = max(Pi_True, [], 2);
+[Pi_True_Max, PerfectInfo_Action_i] = max(Pi_True, [], 2);
+% Legacy alias retained for compatibility with existing saved workspaces.
+True_Action_i = PerfectInfo_Action_i; %#ok<NASGU>
 
 T1_grid = 0.4 : 0.005 : 0.5;
 T2_grid = 0.85 : 0.005 : 1;
 
 E_L_base = zeros(length(k_vals), 1);
 O_base = zeros(length(k_vals), 1);
-A_base = zeros(length(k_vals), 1);
+H_base = zeros(length(k_vals), 1);
 R_base = zeros(length(k_vals), 1);
 T1_base = zeros(length(k_vals), 1);
 T2_base = zeros(length(k_vals), 1);
 
+% Diagnostics verify that Part4 uses the same empirical/bridge/extrapolated
+% residual construction exported by Part3 Exp03.
+noise_source_type = strings(length(k_vals), 1);
+noise_generated_RMSE = nan(length(k_vals), 1);
+noise_target_RMSE = rmse_target;
+noise_bridge_alpha = zeros(length(k_vals), 1);
+noise_bridge_RMSE_scale = ones(length(k_vals), 1);
+noise_parametric_fraction = nan(length(k_vals), 1);
+
 for i = 1:length(k_vals)
     k_current = k_vals(i);
 
-    sampled_noise = local_build_noise_by_k( ...
+    [sampled_noise, noise_diag] = local_build_noise_by_k( ...
         k_current, ...
         k_emp, k_anchor, k_bridge_end, ...
         err_cell, ...
         w_curve, muM_curve, sigM_curve, muR_curve, sigR_curve, rmse_target, k_vals, ...
-        base_u, base_z, base_pick);
+        base_u, base_z, base_pick, base_bridge);
+
+    noise_source_type(i) = string(noise_diag.source_type);
+    noise_generated_RMSE(i) = noise_diag.generated_RMSE;
+    noise_bridge_alpha(i) = noise_diag.bridge_alpha;
+    noise_bridge_RMSE_scale(i) = noise_diag.bridge_RMSE_scale;
+    noise_parametric_fraction(i) = noise_diag.parametric_fraction_realized;
 
     s_pred = min(max(s_true + sampled_noise, 0), 1.0);
 
@@ -403,29 +429,30 @@ for i = 1:length(k_vals)
             Pred_Action_j(s_pred >= T2) = 1;
 
             idx_pred = sub2ind([N_sim, 3], (1:N_sim)', Pred_Action_j);
-            O_arr = Pi_True_Max - Pi_True(idx_pred);
+            O_arr = max(Pi_True_Max - Pi_True(idx_pred), 0);
 
-            is_G1_error = (True_Action_i == 3 & Pred_Action_j == 2) | ...
-                (True_Action_i == 2 & Pred_Action_j == 3);
-            is_G2_error = (True_Action_i == 1 & Pred_Action_j == 2) | ...
-                (True_Action_i == 2 & Pred_Action_j == 1);
+            is_G1_error = (PerfectInfo_Action_i == 3 & Pred_Action_j == 2) | ...
+                (PerfectInfo_Action_i == 2 & Pred_Action_j == 3);
+            is_G2_error = (PerfectInfo_Action_i == 1 & Pred_Action_j == 2) | ...
+                (PerfectInfo_Action_i == 2 & Pred_Action_j == 1);
 
             Current_Eta = zeros(N_sim, 1);
             Current_Eta(is_G1_error) = Eta_1;
             Current_Eta(is_G2_error) = Eta_2;
 
-            trigger_penalty = O_arr > Current_Eta;
+            consequential_mismatch = (Pred_Action_j ~= PerfectInfo_Action_i) & ...
+                (O_arr > Current_Eta);
             Excess_Loss = max(0, O_arr - Current_Eta);
 
-            A_arr = trigger_penalty .* Lambda_A;
-            R_arr = (Pred_Action_j < True_Action_i) .* trigger_penalty .* (Lambda_R .* Excess_Loss);
+            H_arr = consequential_mismatch .* Lambda_H;
+            R_arr = (Pred_Action_j < PerfectInfo_Action_i) .* consequential_mismatch .* (Lambda_R .* Excess_Loss);
 
-            E_L = mean(O_arr + A_arr + R_arr);
+            E_L = mean(O_arr + H_arr + R_arr);
 
             if E_L < min_L
                 min_L = E_L;
                 O_base(i) = mean(O_arr);
-                A_base(i) = mean(A_arr);
+                H_base(i) = mean(H_arr);
                 R_base(i) = mean(R_arr);
                 T1_base(i) = T1;
                 T2_base(i) = T2;
@@ -440,10 +467,10 @@ end
 %% 7) Optimal policy reconstruction at the fixed-scale optimum
 
 Fixed_O = O_base * Fixed_Scale_N;
-Fixed_A = A_base * Fixed_Scale_N;
+Fixed_H = H_base * Fixed_Scale_N;
 Fixed_R = R_base * Fixed_Scale_N;
 Fixed_Model = (k_vals .* c_pack + c_train);
-Fixed_Total_Cost = Fixed_O + Fixed_A + Fixed_R + Fixed_Model;
+Fixed_Total_Cost = Fixed_O + Fixed_H + Fixed_R + Fixed_Model;
 [~, opt_k_idx] = min(Fixed_Total_Cost);
 opt_k = k_vals(opt_k_idx);
 opt_T1 = T1_base(opt_k_idx);
@@ -458,7 +485,7 @@ noise_opt = local_build_noise_by_k( ...
     k_emp, k_anchor, k_bridge_end, ...
     err_cell, ...
     w_curve, muM_curve, sigM_curve, muR_curve, sigR_curve, rmse_target, k_vals, ...
-    base_u, base_z, base_pick);
+    base_u, base_z, base_pick, base_bridge);
 
 s_pred_opt = min(max(s_true + noise_opt, 0), 1.0);
 
@@ -467,23 +494,58 @@ Pred_Action_opt(s_pred_opt >= opt_T1 & s_pred_opt < opt_T2) = 2;
 Pred_Action_opt(s_pred_opt >= opt_T2) = 1;
 
 idx_pred_opt = sub2ind([N_sim, 3], (1:N_sim)', Pred_Action_opt);
-O_arr_opt = Pi_True_Max - Pi_True(idx_pred_opt);
+O_arr_opt = max(Pi_True_Max - Pi_True(idx_pred_opt), 0);
 
-% Apply the decision-loss and penalty accounting logic
-is_G1_opt = (True_Action_i == 3 & Pred_Action_opt == 2) | (True_Action_i == 2 & Pred_Action_opt == 3);
-is_G2_opt = (True_Action_i == 1 & Pred_Action_opt == 2) | (True_Action_i == 2 & Pred_Action_opt == 1);
+% Apply opportunity-loss, handling/rework and risk accounting
+is_G1_opt = (PerfectInfo_Action_i == 3 & Pred_Action_opt == 2) | (PerfectInfo_Action_i == 2 & Pred_Action_opt == 3);
+is_G2_opt = (PerfectInfo_Action_i == 1 & Pred_Action_opt == 2) | (PerfectInfo_Action_i == 2 & Pred_Action_opt == 1);
 Eta_opt = zeros(N_sim, 1); Eta_opt(is_G1_opt) = Eta_1; Eta_opt(is_G2_opt) = Eta_2;
 
-trigger_opt = O_arr_opt > Eta_opt;
+consequential_mismatch_opt = (Pred_Action_opt ~= PerfectInfo_Action_i) & ...
+    (O_arr_opt > Eta_opt);
 Excess_opt = max(0, O_arr_opt - Eta_opt);
 
-A_arr_opt = trigger_opt .* Lambda_A;
-R_arr_opt = (Pred_Action_opt < True_Action_i) .* trigger_opt .* (Lambda_R .* Excess_opt);
+H_arr_opt = consequential_mismatch_opt .* Lambda_H;
+R_arr_opt = (Pred_Action_opt < PerfectInfo_Action_i) .* consequential_mismatch_opt .* (Lambda_R .* Excess_opt);
 
-Total_Loss_opt = O_arr_opt + A_arr_opt + R_arr_opt;
-Net_Revenue_opt = Pi_True(idx_pred_opt) - A_arr_opt - R_arr_opt;
+Total_Loss_opt = O_arr_opt + H_arr_opt + R_arr_opt;
+
+% The executed pathway value already reflects opportunity loss relative to
+% the perfect-information pathway. Therefore opportunity loss is not
+% subtracted again when computing net realized value.
+Executed_Pathway_Value_opt = Pi_True(idx_pred_opt);
+PerfectInfo_Pathway_Value_opt = Pi_True_Max;
+Net_Realized_Value_opt = Executed_Pathway_Value_opt - H_arr_opt - R_arr_opt;
+Net_Realized_Value_check = PerfectInfo_Pathway_Value_opt ...
+    - O_arr_opt - H_arr_opt - R_arr_opt;
+
+accounting_gap = max(abs( ...
+    Net_Realized_Value_opt - Net_Realized_Value_check));
+assert(accounting_gap < 1e-8, ...
+    'Net-value accounting identity failed. Maximum gap = %.3e.', ...
+    accounting_gap);
+
+% Legacy alias retained for compatibility with older plotting scripts.
+Net_Revenue_opt = Net_Realized_Value_opt;
 
 %% 8) Save the full fixed-scale LFP workspace before figure generation
+
+Noise_Diagnostic_Table = table( ...
+    k_vals, ...
+    noise_source_type, ...
+    noise_target_RMSE, ...
+    noise_generated_RMSE, ...
+    noise_bridge_alpha, ...
+    noise_bridge_RMSE_scale, ...
+    noise_parametric_fraction, ...
+    'VariableNames', { ...
+    'k', ...
+    'Residual_source', ...
+    'RMSE_target', ...
+    'RMSE_generated_in_Part4', ...
+    'Bridge_alpha', ...
+    'Bridge_RMSE_scale', ...
+    'Parametric_fraction_realized'});
 
 save(cfg.workspace_mat, '-v7.3');
 fprintf('>>> Full fixed-scale LFP workspace saved to: %s\n', cfg.workspace_mat);
@@ -493,16 +555,16 @@ fprintf('>>> Full fixed-scale LFP workspace saved to: %s\n', cfg.workspace_mat);
 fig_cost_breakdown = figure('Name', sprintf('MainFig02b_fixed_scale_LFP_cost_decomposition_N%d', Fixed_Scale_N), ...
     'Color', 'w', 'Position', [100, 450, 700, 500]);
 
-bar_data = [Fixed_O, Fixed_A, Fixed_R, Fixed_Model] / 1e4;
+bar_data = [Fixed_O, Fixed_H, Fixed_R, Fixed_Model] / 1e4;
 
 b = bar(k_vals, bar_data, 'stacked', 'EdgeColor', 'none');
 hold on;
 
 % Colors
-b(1).FaceColor = [0.93, 0.69, 0.13];   % Opportunity Cost
-b(2).FaceColor = [0.49, 0.18, 0.56];   % Manual Review Cost
-b(3).FaceColor = [0.85, 0.33, 0.10];   % Liability Risk Cost
-b(4).FaceColor = [0.00, 0.45, 0.74];   % SOH Testing Cost
+b(1).FaceColor = [0.93, 0.69, 0.13];   % Opportunity loss
+b(2).FaceColor = [0.49, 0.18, 0.56];   % Mismatch handling and rework cost
+b(3).FaceColor = [0.85, 0.33, 0.10];   % Risk penalty
+b(4).FaceColor = [0.00, 0.45, 0.74];   % SOH labelling and adaptation cost
 
 % Total cost curve
 h_total = plot(k_vals, Fixed_Total_Cost/1e4, '-k', ...
@@ -511,7 +573,7 @@ h_total = plot(k_vals, Fixed_Total_Cost/1e4, '-k', ...
 % Optimal K*
 h_star = plot(opt_k, Fixed_Total_Cost(opt_k_idx)/1e4, 'rp', ...
     'MarkerSize', 16, 'MarkerFaceColor', 'r', ...
-    'DisplayName', 'Optimal K^*');
+    'DisplayName', 'Optimal k^*');
 
 % Vertical line
 xline(opt_k, 'r--', 'LineWidth', 1.5, 'HandleVisibility', 'off');
@@ -519,19 +581,19 @@ xline(opt_k, 'r--', 'LineWidth', 1.5, 'HandleVisibility', 'off');
 uistack(h_total, 'top');
 uistack(h_star, 'top');
 
-xlabel('Training Set Size K');
-ylabel('Cost (10^4 USD)');
-title('B. Cost Breakdown and Total Cost Curve');
+xlabel('Number of labelled target packs, k');
+ylabel('Total cost (10^4 USD)');
+title('Fixed-scale LFP cost decomposition');
 grid on;
 box on;
 
 legend([b(4), b(3), b(2), b(1), h_total, h_star], ...
-    {'SOH Testing Cost', ...
-     'Liability Risk Cost (R)', ...
-     'Manual Review Cost (A)', ...
-     'Opportunity Cost (O)', ...
-     'Total Cost', ...
-     'Optimal K^*'}, ...
+    {'SOH labelling and adaptation cost', ...
+     'Risk penalty', ...
+     'Mismatch handling and rework cost', ...
+     'Opportunity loss', ...
+     'Total cost', ...
+     'Optimal k^*'}, ...
     'Location', 'NorthEast');
 
 local_save_figure(fig_cost_breakdown, cfg.fig_cost_breakdown, cfg.png_cost_breakdown, cfg.png_resolution);
@@ -553,7 +615,7 @@ for plot_idx = 1:num_plots
         k_emp, k_anchor, k_bridge_end, ...
         err_cell, ...
         w_curve, muM_curve, sigM_curve, muR_curve, sigR_curve, rmse_target, k_vals, ...
-        base_u, base_z, base_pick);
+        base_u, base_z, base_pick, base_bridge);
 
     s_p_curr = min(max(s_true + noise_curr, 0), 1.0);
 
@@ -572,22 +634,24 @@ for plot_idx = 1:num_plots
             P_A(s_p_curr >= t1_v & s_p_curr < t2_v) = 2;
             P_A(s_p_curr >= t2_v) = 1;
 
-            O_c = Pi_True_Max - Pi_True(sub2ind([N_sim, 3], (1:N_sim)', P_A));
+            O_c = max(Pi_True_Max - Pi_True(sub2ind([N_sim, 3], (1:N_sim)', P_A)), 0);
 
-            iG1 = (True_Action_i == 3 & P_A == 2) | (True_Action_i == 2 & P_A == 3);
-            iG2 = (True_Action_i == 1 & P_A == 2) | (True_Action_i == 2 & P_A == 1);
+            iG1 = (PerfectInfo_Action_i == 3 & P_A == 2) | (PerfectInfo_Action_i == 2 & P_A == 3);
+            iG2 = (PerfectInfo_Action_i == 1 & P_A == 2) | (PerfectInfo_Action_i == 2 & P_A == 1);
 
             Eta_c = zeros(N_sim, 1);
             Eta_c(iG1) = Eta_1;
             Eta_c(iG2) = Eta_2;
 
-            trig = O_c > Eta_c;
+            consequential_mismatch_surface = ...
+                (P_A ~= PerfectInfo_Action_i) & (O_c > Eta_c);
             Exc = max(0, O_c - Eta_c);
 
-            A_c = trig .* Lambda_A;
-            R_c = (P_A < True_Action_i) .* trig .* (Lambda_R .* Exc);
+            H_c = consequential_mismatch_surface .* Lambda_H;
+            R_c = (P_A < PerfectInfo_Action_i) .* ...
+                consequential_mismatch_surface .* (Lambda_R .* Exc);
 
-            Loss_Grid(i_t2, i_t1) = mean(O_c + A_c + R_c) * Fixed_Scale_N;
+            Loss_Grid(i_t2, i_t1) = mean(O_c + H_c + R_c) * Fixed_Scale_N;
         end
     end
 
@@ -694,7 +758,7 @@ for idx = 1:num_plots
         k_emp, k_anchor, k_bridge_end, ...
         err_cell, ...
         w_curve, muM_curve, sigM_curve, muR_curve, sigR_curve, rmse_target, k_vals, ...
-        base_u, base_z, base_pick);
+        base_u, base_z, base_pick, base_bridge);
 
     s_p_c = min(max(s_true + noise_c, 0), 1.0);
 
@@ -703,24 +767,25 @@ for idx = 1:num_plots
     P_A_c(s_p_c >= T2_c) = 1;
 
     idx_pred_c = sub2ind([N_sim, 3], (1:N_sim)', P_A_c);
-    O_arr_c = Pi_True_Max - Pi_True(idx_pred_c);
+    O_arr_c = max(Pi_True_Max - Pi_True(idx_pred_c), 0);
 
-    iG1_c = (True_Action_i == 3 & P_A_c == 2) | (True_Action_i == 2 & P_A_c == 3);
-    iG2_c = (True_Action_i == 1 & P_A_c == 2) | (True_Action_i == 2 & P_A_c == 1);
+    iG1_c = (PerfectInfo_Action_i == 3 & P_A_c == 2) | (PerfectInfo_Action_i == 2 & P_A_c == 3);
+    iG2_c = (PerfectInfo_Action_i == 1 & P_A_c == 2) | (PerfectInfo_Action_i == 2 & P_A_c == 1);
     Eta_c = zeros(N_sim, 1); Eta_c(iG1_c) = Eta_1; Eta_c(iG2_c) = Eta_2;
 
-    trig_c = O_arr_c > Eta_c; Exc_c = max(0, O_arr_c - Eta_c);
-    A_arr_c = trig_c .* Lambda_A;
-    R_arr_c = (P_A_c < True_Action_i) .* trig_c .* (Lambda_R .* Exc_c);
+    consequential_mismatch_c = (P_A_c ~= PerfectInfo_Action_i) & ...
+        (O_arr_c > Eta_c); Exc_c = max(0, O_arr_c - Eta_c);
+    H_arr_c = consequential_mismatch_c .* Lambda_H;
+    R_arr_c = (P_A_c < PerfectInfo_Action_i) .* consequential_mismatch_c .* (Lambda_R .* Exc_c);
 
-    Total_Loss_c = O_arr_c + A_arr_c + R_arr_c;
+    Total_Decision_Cost_c = O_arr_c + H_arr_c + R_arr_c; %#ok<NASGU>
 
-    Conf_Cnt_c = zeros(3, 3); Conf_Cost_c = zeros(3, 3);
+    Conf_Cnt_c = zeros(3, 3); Conf_ValueLoss_c = zeros(3, 3);
     for i = 1:3
         for j = 1:3
-            mask_c = (True_Action_i == i) & (P_A_c == j);
+            mask_c = (PerfectInfo_Action_i == i) & (P_A_c == j);
             Conf_Cnt_c(i, j) = sum(mask_c) * Scale_Factor;
-            Conf_Cost_c(i, j) = sum(Total_Loss_c(mask_c)) * Scale_Factor;
+            Conf_ValueLoss_c(i, j) = sum(O_arr_c(mask_c)) * Scale_Factor;
         end
     end
 
@@ -731,7 +796,7 @@ for idx = 1:num_plots
     if k_curr == opt_k
 tit_str = sprintf('k = %d (optimal k^*)', k_curr);
     else
-        tit_str = sprintf('K=%d', k_curr);
+        tit_str = sprintf('k = %d', k_curr);
     end
 
 % Plot the row-normalized confusion-ratio matrix in a separate window
@@ -784,7 +849,7 @@ fig_cost = figure('Name', sprintf('Value_loss_matrix_%s', tit_str), ...
                       'Position', [500 + idx*25, 450 - idx*15, 420, 380]);
     ax2 = axes('Parent', fig_cost);
 
-    M_cost = Conf_Cost_c / 10000; 
+    M_cost = Conf_ValueLoss_c / 10000; 
     cost_max = max(M_cost(:));
     if cost_max < 1e-4; cost_max = 1; end
 
@@ -861,30 +926,31 @@ for act_j = 1:3
 % Baseline economic value of the selected action under the true SOH
     ch_v = Pi_True(:, act_j);
 
-% Opportunity loss relative to the true optimal action
-    O_tmp = Pi_True_Max - ch_v;
+% Opportunity loss relative to the perfect-information reference action
+    O_tmp = max(Pi_True_Max - ch_v, 0);
 
 % Identify the misclassification type
-    is_G1 = (True_Action_i == 3 & act_j == 2) | ...
-            (True_Action_i == 2 & act_j == 3);
+    is_G1 = (PerfectInfo_Action_i == 3 & act_j == 2) | ...
+            (PerfectInfo_Action_i == 2 & act_j == 3);
 
-    is_G2 = (True_Action_i == 1 & act_j == 2) | ...
-            (True_Action_i == 2 & act_j == 1);
+    is_G2 = (PerfectInfo_Action_i == 1 & act_j == 2) | ...
+            (PerfectInfo_Action_i == 2 & act_j == 1);
 
     Eta_tmp = zeros(N_sim, 1);
     Eta_tmp(is_G1) = Eta_1;
     Eta_tmp(is_G2) = Eta_2;
 
-% Apply the same penalty logic as used in the grid-search objective
-    trigger_tmp = O_tmp > Eta_tmp;
+% Apply the same handling/rework and risk logic as in the grid-search objective
+    consequential_mismatch_tmp = (act_j ~= PerfectInfo_Action_i) & ...
+        (O_tmp > Eta_tmp);
     Excess_tmp  = max(0, O_tmp - Eta_tmp);
 
-    A_tmp = trigger_tmp .* Lambda_A;
-    R_tmp = (act_j < True_Action_i) .* trigger_tmp .* (Lambda_R .* Excess_tmp);
+    H_tmp = consequential_mismatch_tmp .* Lambda_H;
+    R_tmp = (act_j < PerfectInfo_Action_i) .* consequential_mismatch_tmp .* (Lambda_R .* Excess_tmp);
 
-% Net value equals baseline value minus manual-review and risk penalties.
-% This is equivalent to maximizing Pi_True_Max - (O + A + R).
-    J_action(:, act_j) = ch_v - A_tmp - R_tmp;
+% Net value equals executed pathway value minus handling/rework and risk costs.
+% This is equivalent to maximizing Pi_True_Max - (O + H + R).
+    J_action(:, act_j) = ch_v - H_tmp - R_tmp;
 end
 
 
@@ -981,17 +1047,17 @@ hold on;
 plot(x_grid, J_plot_1, '-', ...
     'LineWidth', 1.4, ...
     'Color', [0.85 0.15 0.15], ...
-    'DisplayName', 'Action 1 Net Value');
+    'DisplayName', 'A_1 net value');
 
 plot(x_grid, J_plot_2, '-', ...
     'LineWidth', 1.4, ...
     'Color', [0.55 0.35 0.80], ...
-    'DisplayName', 'Action 2 Net Value');
+    'DisplayName', 'A_2 net value');
 
 plot(x_grid, J_plot_3, '-', ...
     'LineWidth', 1.4, ...
     'Color', [0.45 0.28 0.22], ...
-    'DisplayName', 'Action 3 Net Value');
+    'DisplayName', 'A_3 net value');
 
 plot(x_grid, J_env, '--', ...
     'LineWidth', 1.2, ...
@@ -1010,7 +1076,7 @@ xline(opt_T2, 'b--', sprintf('T_2^* = %.3f', opt_T2), ...
     'HandleVisibility', 'off');
 
 xlabel('Predicted SOH');
-ylabel('Expected net value per pack');
+ylabel('Expected net pathway value per pack (USD)');
 legend('Location', 'northwest');
 
 grid on;
@@ -1142,23 +1208,27 @@ LFP_fixed_result.c_pack = c_pack;
 LFP_fixed_result.c_train = c_train;
 LFP_fixed_result.Eta_1 = Eta_1;
 LFP_fixed_result.Eta_2 = Eta_2;
-LFP_fixed_result.Lambda_A = Lambda_A;
+LFP_fixed_result.Lambda_H = Lambda_H;
+LFP_fixed_result.Lambda_A = Lambda_A; % legacy alias
 LFP_fixed_result.Lambda_R = Lambda_R;
 
 % Action-value samples and SOH samples
 LFP_fixed_result.s_true = s_true;
 LFP_fixed_result.Pi_True = Pi_True;
 LFP_fixed_result.Pi_True_Max = Pi_True_Max;
-LFP_fixed_result.True_Action_i = True_Action_i;
+LFP_fixed_result.PerfectInfo_Action_i = PerfectInfo_Action_i;
+LFP_fixed_result.True_Action_i = PerfectInfo_Action_i; % legacy alias
 
 % k-dependent cost results
 LFP_fixed_result.O_base = O_base;
-LFP_fixed_result.A_base = A_base;
+LFP_fixed_result.H_base = H_base;
+LFP_fixed_result.A_base = H_base; % legacy alias
 LFP_fixed_result.R_base = R_base;
 LFP_fixed_result.E_L_base = E_L_base;
 
 LFP_fixed_result.Fixed_O = Fixed_O;
-LFP_fixed_result.Fixed_A = Fixed_A;
+LFP_fixed_result.Fixed_H = Fixed_H;
+LFP_fixed_result.Fixed_A = Fixed_H; % legacy alias
 LFP_fixed_result.Fixed_R = Fixed_R;
 LFP_fixed_result.Fixed_Model = Fixed_Model;
 LFP_fixed_result.Fixed_Total_Cost = Fixed_Total_Cost;
@@ -1176,10 +1246,14 @@ LFP_fixed_result.noise_opt = noise_opt;
 LFP_fixed_result.s_pred_opt = s_pred_opt;
 LFP_fixed_result.Pred_Action_opt = Pred_Action_opt;
 LFP_fixed_result.O_arr_opt = O_arr_opt;
-LFP_fixed_result.A_arr_opt = A_arr_opt;
+LFP_fixed_result.H_arr_opt = H_arr_opt;
+LFP_fixed_result.A_arr_opt = H_arr_opt; % legacy alias
 LFP_fixed_result.R_arr_opt = R_arr_opt;
 LFP_fixed_result.Total_Loss_opt = Total_Loss_opt;
-LFP_fixed_result.Net_Revenue_opt = Net_Revenue_opt;
+LFP_fixed_result.Executed_Pathway_Value_opt = Executed_Pathway_Value_opt;
+LFP_fixed_result.PerfectInfo_Pathway_Value_opt = PerfectInfo_Pathway_Value_opt;
+LFP_fixed_result.Net_Realized_Value_opt = Net_Realized_Value_opt;
+LFP_fixed_result.Net_Revenue_opt = Net_Realized_Value_opt; % legacy alias
 
 % Figure-level diagnostic outputs
 if exist('T1_curve_cross', 'var')
@@ -1216,6 +1290,7 @@ LFP_fixed_result.muM_curve = muM_curve;
 LFP_fixed_result.sigM_curve = sigM_curve;
 LFP_fixed_result.muR_curve = muR_curve;
 LFP_fixed_result.sigR_curve = sigR_curve;
+LFP_fixed_result.Noise_Diagnostic_Table = Noise_Diagnostic_Table;
 
 LFP_fixed_result.cfg_part4 = cfg;
 LFP_fixed_result.input_lfp_soh_mat = cfg.lfp_soh_mat;
@@ -1230,7 +1305,7 @@ Summary_Table = table( ...
     Fixed_Total_Cost(opt_k_idx), ...
     Fixed_Total_Cost(opt_k_idx) / Fixed_Scale_N, ...
     Fixed_O(opt_k_idx), ...
-    Fixed_A(opt_k_idx), ...
+    Fixed_H(opt_k_idx), ...
     Fixed_R(opt_k_idx), ...
     Fixed_Model(opt_k_idx), ...
     mean(Pred_Action_opt == 1), ...
@@ -1243,9 +1318,9 @@ Summary_Table = table( ...
     'opt_total_cost_USD', ...
     'opt_cost_per_pack_USD', ...
     'opportunity_loss_USD', ...
-    'manual_review_cost_USD', ...
+    'mismatch_handling_rework_cost_USD', ...
     'risk_penalty_USD', ...
-    'SOH_labeling_training_cost_USD', ...
+    'SOH_labelling_adaptation_cost_USD', ...
     'A1_predicted_share', ...
     'A2_predicted_share', ...
     'A3_predicted_share'});

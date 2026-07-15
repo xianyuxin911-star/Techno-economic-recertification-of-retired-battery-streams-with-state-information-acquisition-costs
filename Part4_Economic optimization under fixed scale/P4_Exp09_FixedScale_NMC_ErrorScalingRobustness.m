@@ -53,6 +53,9 @@ cfg.png_thresholds = fullfile(cfg.extended_fig_dir, 'ExD08f_NMC_error_scaling_op
 
 cfg.png_resolution = 600;
 
+% The fixed k must come from the baseline NMC optimization at rho = 0.8.
+cfg.baseline_rho = 0.8;
+
 folder_list = {cfg.output_dir, cfg.results_dir, cfg.figure_root, cfg.extended_fig_dir};
 
 for ii = 1:numel(folder_list)
@@ -151,6 +154,21 @@ fprintf('Fixed scale = %d packs\n', Fixed_Scale_N);
 fprintf('Eta_1 = %.4f, Eta_2 = %.4f\n', Eta_1, Eta_2);
 fprintf('Lambda_A = %.4f, Lambda_R = %.4f\n', Lambda_A, Lambda_R);
 
+if isfield(S, 'rho')
+    rho_workspace = double(S.rho);
+
+    if ~isscalar(rho_workspace) || ~isfinite(rho_workspace) || ...
+            abs(rho_workspace - cfg.baseline_rho) > 1e-12
+        error(['The fixed information investment must be taken from the ' ...
+            'baseline NMC optimization at rho = %.1f. The loaded workspace ' ...
+            'contains rho = %.6g.'], cfg.baseline_rho, rho_workspace);
+    end
+else
+    warning(['The input workspace does not store rho. The script assumes ' ...
+        'that P4 Exp02 was run at the baseline rho = %.1f.'], ...
+        cfg.baseline_rho);
+end
+
 %% 3) Extract the baseline residual-error template
 if isfield(S, 'eps_ref')
 
@@ -210,9 +228,17 @@ elseif isfield(S, 'opt_k')
 
 else
 
-    warning('No optimized NMC label size was found. Using k_ref_for_NMC = 8 as fallback.');
-    k_ref_for_NMC = 8;
+    error(['No optimized NMC label size was found in %s. ' ...
+        'Run the baseline P4 Exp02 optimization before P4 Exp09.'], ...
+        cfg.input_mat);
 end
+
+if ~isscalar(k_ref_for_NMC) || ~isfinite(k_ref_for_NMC) || ...
+        k_ref_for_NMC <= 0 || abs(k_ref_for_NMC - round(k_ref_for_NMC)) > 1e-12
+    error('The fixed NMC label count must be a positive integer.');
+end
+
+k_ref_for_NMC = round(k_ref_for_NMC);
 
 Information_cost_USD_fixed = k_ref_for_NMC * c_pack + c_train;
 
@@ -334,8 +360,8 @@ n_rho = numel(rho_list);
 rho_label = strings(n_rho, 1);
 
 for rr = 1:n_rho
-    if abs(rho_list(rr) - 0.8) < 1e-12
-        rho_label(rr) = "rho = 0.8 baseline";
+    if abs(rho_list(rr) - cfg.baseline_rho) < 1e-12
+        rho_label(rr) = sprintf("rho = %.1f baseline", cfg.baseline_rho);
     else
         rho_label(rr) = sprintf("rho = %.1f", rho_list(rr));
     end
@@ -526,11 +552,11 @@ end
 
 fprintf('NMC residual-error scaling robustness optimization completed.\n');
 
-%% 9) Calculate policy-turnover rates relative to baseline rho = 0.8
-idx_baseline_rho = find(abs(rho_list - 0.8) < 1e-12, 1);
+%% 9) Calculate policy-turnover rates relative to baseline rho = %.1f
+idx_baseline_rho = find(abs(rho_list - cfg.baseline_rho) < 1e-12, 1);
 
 if isempty(idx_baseline_rho)
-    error('rho_list does not include the baseline rho = 0.8.');
+    error('rho_list does not include the baseline rho = %.1f.', cfg.baseline_rho);
 end
 
 Pred_Action_baseline = Pred_Action_byRho(:, idx_baseline_rho);
@@ -564,7 +590,7 @@ for rr = 1:n_rho
     end
 end
 
-fprintf('Policy-turnover rates relative to baseline rho = 0.8 have been calculated.\n');
+fprintf('Policy-turnover rates relative to baseline rho = %.1f have been calculated.\n', cfg.baseline_rho);
 
 %% 10) Build and save summary table
 Result_Table = table( ...

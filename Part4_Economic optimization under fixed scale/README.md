@@ -128,7 +128,7 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 
 ### Step 7 — LFP SOH-testing-cost sensitivity
 
-**Run:** `P4_Exp07_LFP_SOHTestingCostSensitivity`
+**Run:** `P4_Exp07_LFP_SOH_Label_Cost_Sensitivity`
 
 **Reads:** `P4_Exp01_FixedScale_LFP_Workspace.mat`
 
@@ -144,7 +144,7 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 
 ### Step 8 — LFP refurbishment-improvement sensitivity
 
-**Run:** `P4_Exp08_LFP_RefurbishmentImprovementSensitivity`
+**Run:** `P4_Exp08_LFP_Refurbishment_Improvement_Sensitivity`
 
 **Reads:** `P4_Exp01_FixedScale_LFP_Workspace.mat`
 

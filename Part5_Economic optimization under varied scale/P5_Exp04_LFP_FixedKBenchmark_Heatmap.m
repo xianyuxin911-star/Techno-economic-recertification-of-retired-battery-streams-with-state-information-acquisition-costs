@@ -54,6 +54,14 @@ cfg.png_resolution = 600;
 % Benchmark settings.
 benchmark_k = [5; 15; 25; 35; 50];
 
+% Each fixed-k benchmark uses the thresholds already re-optimized
+% conditional on that k in Part5 Exp01.
+benchmark_definition = ...
+    'Fixed k with T1 and T2 re-optimized conditional on k';
+
+% Numerical tolerance for optimized-versus-benchmark cost checks.
+cost_tolerance_USD = 1e-7;
+
 % Plot settings.
 show_cell_values = false;
 use_log_color = true;
@@ -161,6 +169,22 @@ n_scale = numel(scale_ton_list);
 n_k = numel(k_vals);
 n_benchmark = numel(benchmark_k);
 
+if any(~isfinite(scale_ton_list)) || any(scale_ton_list <= 0)
+    error('scale_ton_list must contain positive finite values.');
+end
+
+if any(~isfinite(k_vals)) || any(diff(k_vals) <= 0)
+    error('k_vals must be finite and strictly increasing.');
+end
+
+if any(~isfinite(N_list)) || any(N_list <= 0)
+    error('The deployment-scale pack numbers must be positive and finite.');
+end
+
+if numel(unique(benchmark_k)) ~= n_benchmark
+    error('benchmark_k contains duplicated fixed-k policies.');
+end
+
 %% 4. Ensure Total_Cost_NK is scale-by-k
 
 Total_Cost_NK = squeeze(Total_Cost_NK);
@@ -184,6 +208,10 @@ end
 
 if numel(N_list) ~= n_scale
     error('The length of N_list is inconsistent with scale_ton_list.');
+end
+
+if any(~isfinite(Total_Cost_NK(:))) || any(Total_Cost_NK(:) < 0)
+    error('Total_Cost_NK contains non-finite or negative values.');
 end
 
 %% 5. Recompute optimized policy from the saved scale-by-k cost matrix
@@ -233,8 +261,21 @@ for bb = 1:n_benchmark
         100 .* additional_cost(:, bb) ./ max(benchmark_cost(:, bb), eps);
 end
 
-% Numerical cleanup.
-additional_cost(abs(additional_cost) < 1e-9) = 0;
+% A fixed-k policy cannot outperform the row-wise optimized policy.
+if any(additional_cost(:) < -cost_tolerance_USD)
+    error(['At least one fixed-k benchmark cost is lower than the saved ' ...
+        'optimized cost. Check Total_Cost_NK and its k-axis ordering.']);
+end
+
+% Numerical cleanup only.
+additional_cost(additional_cost < 0 & ...
+    additional_cost >= -cost_tolerance_USD) = 0;
+
+additional_cost_per_pack = additional_cost ./ N_list;
+
+relative_saving_percent = ...
+    100 .* additional_cost ./ max(benchmark_cost, eps);
+
 additional_cost_per_pack(abs(additional_cost_per_pack) < 1e-12) = 0;
 relative_saving_percent(abs(relative_saving_percent) < 1e-10) = 0;
 
@@ -315,6 +356,15 @@ plot_matrix_million = additional_cost_million.';
 if use_log_color
 
     plot_matrix_million(plot_matrix_million <= 0) = color_floor_million;
+
+    max_plot_value = max(additional_cost_million(:));
+
+    if max_plot_value > color_ceiling_million
+        warning(['The largest additional cost (%.4f million USD) exceeds ' ...
+            'the configured color ceiling (%.4f million USD). The heat map ' ...
+            'will be visually saturated above the ceiling.'], ...
+            max_plot_value, color_ceiling_million);
+    end
 end
 
 %% 9. Plot Main Fig. 4g heat map
@@ -422,6 +472,8 @@ writetable(P5_Exp04_LFP_FixedKBenchmark_Table, cfg.output_table_csv);
 
 save(cfg.output_data_mat, ...
     'cfg', ...
+    'benchmark_definition', ...
+    'cost_tolerance_USD', ...
     'scale_ton_list', ...
     'N_list', ...
     'k_vals', ...
