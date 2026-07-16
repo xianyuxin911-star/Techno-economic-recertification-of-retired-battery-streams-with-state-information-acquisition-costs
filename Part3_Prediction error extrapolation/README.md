@@ -41,12 +41,12 @@ The script repeatedly samples training sets at different labelled-pack counts \(
 
 **Reproduces**
 
-> **Extended Data Fig. 2b–f — Error decay, RMSE distributions, and prediction clouds**  
+> **Extended Data Fig. 2b–d — Error decay, RMSE distributions, and prediction clouds**  
 > `Figures/Extended/ExD02b_label_dependent_RMSE_MAE_decay.png`  
 > `Figures/Extended/ExD02c_representative_RMSE_distribution.png`  
-> `Figures/Extended/ExD02d_prediction_cloud_few_labels.png`  
-> `Figures/Extended/ExD02e_prediction_cloud_medium_labels.png`  
-> `Figures/Extended/ExD02f_prediction_cloud_large_labels.png`
+> `Figures/Extended/ExD02d_source_prediction_cloud_few_labels.png`  
+> `Figures/Extended/ExD02d_source_prediction_cloud_medium_labels.png`  
+> `Figures/Extended/ExD02d_source_prediction_cloud_large_labels.png`
 
 ---
 
@@ -67,12 +67,16 @@ Output/Results/P3_Exp03_ResidualExtrapolation_Model.mat
 
 **Reproduces**
 
-> **Extended Data Fig. 3a–e — Residual distributions and fitted scaling relationships**  
-> `Figures/Extended/ExD03a_residual_distribution_k05_to_k25/`  
-> `Figures/Extended/ExD03b_RMSE_scaling_fit.png`  
-> `Figures/Extended/ExD03c_PR_fit.png`  
-> `Figures/Extended/ExD03d_PM_fit.png`  
-> `Figures/Extended/ExD03e_sigmaR_fit.png`
+> **Extended Data Fig. 3b–e — Fitted residual-feature scaling relationships**  
+> `Figures/Extended/ExD03b_PM_fit.png`  
+> `Figures/Extended/ExD03c_sigmaR_fit.png`  
+> `Figures/Extended/ExD03d_PR_fit.png`  
+> `Figures/Extended/ExD03e_RMSE_scaling_fit.png`
+>
+> **Supplementary Fig. 7 — Empirical and bridged residual distributions across k**  
+> `Figures/Supplementary/SupFig07_residual_distributions_k05_to_k25/`
+
+Selected distributions from Supplementary Fig. 7 are the source plots used to assemble Extended Data Fig. 3a.
 
 `P3_Exp03_ResidualExtrapolation_Model.mat` is the principal Part 3 output consumed by Parts 4 and 5.
 
@@ -88,16 +92,16 @@ Output/Results/P3_Exp03_ResidualExtrapolation_Model.mat
 
 **Reproduces**
 
-> **Supplementary Fig. 12a–d — Residual-region boundary robustness**  
-> `Figures/Supplementary/SupFig12a_ResidualRegionBoundary_R2_summary.png`  
-> `Figures/Supplementary/SupFig12b_ResidualRegionBoundary_PM_sensitivity.png`  
-> `Figures/Supplementary/SupFig12c_ResidualRegionBoundary_PR_sensitivity.png`  
-> `Figures/Supplementary/SupFig12d_ResidualRegionBoundary_SigmaR_sensitivity.png`
+> **Supplementary Figs. 8–11 — Residual-region boundary robustness summaries**  
+> `Figures/Supplementary/SupFig08_ResidualRegionBoundary_PM_sensitivity.png`  
+> `Figures/Supplementary/SupFig09_ResidualRegionBoundary_PR_sensitivity.png`  
+> `Figures/Supplementary/SupFig10_ResidualRegionBoundary_SigmaR_sensitivity.png`  
+> `Figures/Supplementary/SupFig11_ResidualRegionBoundary_R2_summary.png`
 
 Additional scenario-specific residual distributions are written to:
 
 ```text
-Figures/Supplementary/SupFig12_residual_region_distributions_k05_to_k25/
+Figures/Supplementary/SupFig12_residual_region_distributions_empirical_k05_to_k20/
 ```
 
 ## Repository policy

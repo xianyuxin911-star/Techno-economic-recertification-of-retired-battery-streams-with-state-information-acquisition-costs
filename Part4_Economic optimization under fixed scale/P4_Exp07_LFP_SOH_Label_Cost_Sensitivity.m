@@ -17,9 +17,9 @@
 % P4_Exp01_FixedScale_LFP_Results.mat
 %
 % Figure outputs:
-% Extended Data Fig. 6c:
+% Extended Data Fig. 7a:
 % optimal k* and total cost per pack versus unit SOH-label cost
-% Extended Data Fig. 6d:
+% Extended Data Fig. 7b:
 % optimized cost decomposition versus unit SOH-label cost
 %% =========================================================================
 
@@ -70,19 +70,18 @@ cfg.all_k_csv = fullfile(cfg.results_dir, ...
 cfg.result_mat = fullfile(cfg.results_dir, ...
  'P4_Exp07_LFP_SOHLabelCostSensitivity_Results.mat');
 
-% Extended Data Fig. 6c-d.
-% Panels a-b are reserved for the fixed-k regret benchmarks.
+% Extended Data Fig. 7a-b.
 cfg.fig_dual = fullfile(cfg.extended_fig_dir, ...
- 'ExD06c_LFP_SOH_label_cost_sensitivity.fig');
+ 'ExD07a_LFP_SOH_label_cost_sensitivity.fig');
 
 cfg.png_dual = fullfile(cfg.extended_fig_dir, ...
- 'ExD06c_LFP_SOH_label_cost_sensitivity.png');
+ 'ExD07a_LFP_SOH_label_cost_sensitivity.png');
 
 cfg.fig_cost_decomp = fullfile(cfg.extended_fig_dir, ...
- 'ExD06d_LFP_SOH_label_cost_decomposition.fig');
+ 'ExD07b_LFP_SOH_label_cost_decomposition.fig');
 
 cfg.png_cost_decomp = fullfile(cfg.extended_fig_dir, ...
- 'ExD06d_LFP_SOH_label_cost_decomposition.png');
+ 'ExD07b_LFP_SOH_label_cost_decomposition.png');
 
 cfg.png_resolution = 600;
 
@@ -652,9 +651,9 @@ fprintf('Summary table saved: %s\n', cfg.summary_csv);
 fprintf('All-k table saved: %s\n', cfg.all_k_csv);
 fprintf('MAT result saved: %s\n', cfg.result_mat);
 
-%% 8) Extended Data Fig. 6c: k* and cost per pack
+%% 8) Extended Data Fig. 7a: k* and cost per pack
 fig_a = figure( ...
- 'Name', 'ExD06c_LFP_SOH_label_cost_sensitivity', ...
+ 'Name', 'ExD07a_LFP_SOH_label_cost_sensitivity', ...
  'Color', 'w', ...
  'Position', [100, 80, 820, 580]);
 
@@ -741,9 +740,9 @@ local_save_figure( ...
  cfg.png_dual, ...
  cfg.png_resolution);
 
-%% 9) Extended Data Fig. 6d: optimized cost decomposition
+%% 9) Extended Data Fig. 7b: optimized cost decomposition
 fig_b = figure( ...
- 'Name', 'ExD06d_LFP_SOH_label_cost_decomposition', ...
+ 'Name', 'ExD07b_LFP_SOH_label_cost_decomposition', ...
  'Color', 'w', ...
  'Position', [140, 100, 860, 580]);
 

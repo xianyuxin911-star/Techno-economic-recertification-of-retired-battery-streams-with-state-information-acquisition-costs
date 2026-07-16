@@ -37,12 +37,12 @@ cfg.allK_csv = fullfile(cfg.results_dir, 'P4_Exp08_LFP_RefurbishmentImprovementS
 cfg.result_mat = fullfile(cfg.results_dir, 'P4_Exp08_LFP_RefurbishmentImprovementSensitivity_Results.mat');
 cfg.cache_mat = fullfile(cfg.results_dir, 'P4_Exp08_LFP_RefurbishmentImprovementSensitivity_PredictionCache.mat');
 
-cfg.fig_beta_action_share = fullfile(cfg.extended_fig_dir, 'ExD07a_LFP_refurbishment_improvement_action_shares.fig');
-cfg.png_beta_action_share = fullfile(cfg.extended_fig_dir, 'ExD07a_LFP_refurbishment_improvement_action_shares.png');
-cfg.fig_beta_thresholds = fullfile(cfg.extended_fig_dir, 'ExD07b_LFP_refurbishment_improvement_thresholds.fig');
-cfg.png_beta_thresholds = fullfile(cfg.extended_fig_dir, 'ExD07b_LFP_refurbishment_improvement_thresholds.png');
-cfg.fig_beta_cost_decomp = fullfile(cfg.extended_fig_dir, 'ExD07c_LFP_refurbishment_improvement_cost_decomposition.fig');
-cfg.png_beta_cost_decomp = fullfile(cfg.extended_fig_dir, 'ExD07c_LFP_refurbishment_improvement_cost_decomposition.png');
+cfg.fig_beta_action_share = fullfile(cfg.extended_fig_dir, 'ExD09a_LFP_refurbishment_improvement_action_shares.fig');
+cfg.png_beta_action_share = fullfile(cfg.extended_fig_dir, 'ExD09a_LFP_refurbishment_improvement_action_shares.png');
+cfg.fig_beta_thresholds = fullfile(cfg.extended_fig_dir, 'ExD09b_LFP_refurbishment_improvement_thresholds.fig');
+cfg.png_beta_thresholds = fullfile(cfg.extended_fig_dir, 'ExD09b_LFP_refurbishment_improvement_thresholds.png');
+cfg.fig_beta_cost_decomp = fullfile(cfg.extended_fig_dir, 'ExD09c_LFP_refurbishment_improvement_cost_decomposition.fig');
+cfg.png_beta_cost_decomp = fullfile(cfg.extended_fig_dir, 'ExD09c_LFP_refurbishment_improvement_cost_decomposition.png');
 
 cfg.png_resolution = 600;
 
@@ -763,9 +763,9 @@ fprintf('MAT result file saved: %s\n', cfg.result_mat);
 
 %% 8) Generate and save figures
 
-% Extended Data Fig. 7a: beta_refurbish vs action shares.
+% Extended Data Fig. 9a: beta_refurbish vs action shares.
 fig1 = figure( ...
- 'Name', 'ExD07a_LFP_refurbishment_improvement_action_shares', ...
+ 'Name', 'ExD09a_LFP_refurbishment_improvement_action_shares', ...
  'Color', 'w', ...
  'Position', [100, 80, 760, 560]);
 
@@ -814,9 +814,9 @@ set(gca, ...
 
 local_save_figure(fig1, cfg.fig_beta_action_share, cfg.png_beta_action_share, cfg.png_resolution);
 
-% Extended Data Fig. 7b: beta_refurbish vs optimized thresholds.
+% Extended Data Fig. 9b: beta_refurbish vs optimized thresholds.
 fig2 = figure( ...
- 'Name', 'ExD07b_LFP_refurbishment_improvement_thresholds', ...
+ 'Name', 'ExD09b_LFP_refurbishment_improvement_thresholds', ...
  'Color', 'w', ...
  'Position', [140, 100, 760, 560]);
 
@@ -882,9 +882,9 @@ set(gca, ...
 
 local_save_figure(fig2, cfg.fig_beta_thresholds, cfg.png_beta_thresholds, cfg.png_resolution);
 
-% Extended Data Fig. 7c: cost decomposition under beta_refurbish sensitivity.
+% Extended Data Fig. 9c: cost decomposition under beta_refurbish sensitivity.
 fig3 = figure( ...
- 'Name', 'ExD07c_LFP_refurbishment_improvement_cost_decomposition', ...
+ 'Name', 'ExD09c_LFP_refurbishment_improvement_cost_decomposition', ...
  'Color', 'w', ...
  'Position', [180, 120, 840, 560]);
 

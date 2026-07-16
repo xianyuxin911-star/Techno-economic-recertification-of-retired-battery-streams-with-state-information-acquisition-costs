@@ -28,14 +28,14 @@ cfg.hardmin_csv = fullfile(cfg.output_results_dir, 'P2_Exp07_AttentionPoolingAbl
 cfg.mean_csv = fullfile(cfg.output_results_dir, 'P2_Exp07_AttentionPoolingAblation_Mean_PackPredictions.csv');
 
 % Output figures.
-cfg.fig_tracking = fullfile(cfg.figure_dir,  'ExD01i_attention_tracking.fig');
-cfg.png_tracking = fullfile(cfg.figure_dir, 'ExD01i_attention_tracking.png');
+cfg.fig_tracking = fullfile(cfg.figure_dir,  'ExD01c_attention_tracking.fig');
+cfg.png_tracking = fullfile(cfg.figure_dir, 'ExD01c_attention_tracking.png');
 
-cfg.fig_error_heatmap = fullfile(cfg.figure_dir, 'ExD01j_attention_error_heatmap.fig');
-cfg.png_error_heatmap = fullfile(cfg.figure_dir, 'ExD01j_attention_error_heatmap.png');
+cfg.fig_error_heatmap = fullfile(cfg.figure_dir, 'ExD01d_attention_error_heatmap.fig');
+cfg.png_error_heatmap = fullfile(cfg.figure_dir, 'ExD01d_attention_error_heatmap.png');
 
-cfg.fig_attn_heatmap = fullfile(cfg.figure_dir, 'ExD01k_max_attention_heatmap.fig');
-cfg.png_attn_heatmap = fullfile(cfg.figure_dir, 'ExD01k_max_attention_heatmap.png');
+cfg.fig_attn_heatmap = fullfile(cfg.figure_dir, 'ExD01e_max_attention_heatmap.fig');
+cfg.png_attn_heatmap = fullfile(cfg.figure_dir, 'ExD01e_max_attention_heatmap.png');
 
 cfg.png_resolution = 600;
 

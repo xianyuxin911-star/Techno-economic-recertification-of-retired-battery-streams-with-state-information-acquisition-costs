@@ -62,7 +62,7 @@ cfg.workspace_mat = fullfile(cfg.results_dir, 'P5_Exp02_ScaleDependent_NMC_Works
 cfg.summary_csv = fullfile(cfg.results_dir, 'P5_Exp02_ScaleDependent_NMC_Summary.csv');
 cfg.action_value_csv = fullfile(cfg.results_dir, 'P5_Exp02_ScaleDependent_NMC_ActionValueDecomposition.csv');
 cfg.manuscript_summary_csv = fullfile(cfg.results_dir, 'P5_Exp02_ScaleDependent_NMC_ManuscriptValueSummary.csv');
-cfg.action_allocation_csv = fullfile(cfg.results_dir, 'P5_Exp02_ScaleDependent_NMC_ActionAllocationForExD05.csv');
+cfg.action_allocation_csv = fullfile(cfg.results_dir, 'ExD05b_NMC_scale_dependent_action_allocation.csv');
 
 cfg.png_resolution = 600;
 % Figure files for Main Fig. 5.

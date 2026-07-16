@@ -1,7 +1,7 @@
 %% P4_Exp10_LFP_GrayZoneToleranceMechanism.m
 % Purpose:
 % This script analyzes the gray-zone tolerance mechanism under the fixed-scale LFP
-% baseline policy and generates Supplementary Fig. 19.
+% baseline policy and generates Supplementary Figs. 16-17.
 %
 % The baseline policy, including k*, T1*, and T2*, is first fixed to analyze severe-trigger
 % rates and penalty-related costs under eta_1 and eta_2 sensitivity. The script then
@@ -47,23 +47,23 @@ cfg.eta2_compare_csv = fullfile(cfg.results_dir, 'P4_Exp10_LFP_GrayZoneTolerance
 cfg.result_mat = fullfile(cfg.results_dir, 'P4_Exp10_LFP_GrayZoneToleranceMechanism_Results.mat');
 
 % Output figures.
-cfg.fig_eta1_trigger = fullfile(cfg.supp_fig_dir, 'SupFig19a_LFP_gray_zone_Eta1_trigger_rate_composition.fig');
-cfg.png_eta1_trigger = fullfile(cfg.supp_fig_dir, 'SupFig19a_LFP_gray_zone_Eta1_trigger_rate_composition.png');
+cfg.fig_eta1_trigger = fullfile(cfg.supp_fig_dir, 'SupFig16a_LFP_gray_zone_Eta1_trigger_rate_composition.fig');
+cfg.png_eta1_trigger = fullfile(cfg.supp_fig_dir, 'SupFig16a_LFP_gray_zone_Eta1_trigger_rate_composition.png');
 
-cfg.fig_eta1_cost = fullfile(cfg.supp_fig_dir, 'SupFig19b_LFP_gray_zone_Eta1_penalty_cost_composition.fig');
-cfg.png_eta1_cost = fullfile(cfg.supp_fig_dir, 'SupFig19b_LFP_gray_zone_Eta1_penalty_cost_composition.png');
+cfg.fig_eta1_cost = fullfile(cfg.supp_fig_dir, 'SupFig16b_LFP_gray_zone_Eta1_penalty_cost_composition.fig');
+cfg.png_eta1_cost = fullfile(cfg.supp_fig_dir, 'SupFig16b_LFP_gray_zone_Eta1_penalty_cost_composition.png');
 
-cfg.fig_eta2_trigger = fullfile(cfg.supp_fig_dir, 'SupFig19c_LFP_gray_zone_Eta2_trigger_rate_composition.fig');
-cfg.png_eta2_trigger = fullfile(cfg.supp_fig_dir, 'SupFig19c_LFP_gray_zone_Eta2_trigger_rate_composition.png');
+cfg.fig_eta2_trigger = fullfile(cfg.supp_fig_dir, 'SupFig17a_LFP_gray_zone_Eta2_trigger_rate_composition.fig');
+cfg.png_eta2_trigger = fullfile(cfg.supp_fig_dir, 'SupFig17a_LFP_gray_zone_Eta2_trigger_rate_composition.png');
 
-cfg.fig_eta2_cost = fullfile(cfg.supp_fig_dir, 'SupFig19d_LFP_gray_zone_Eta2_penalty_cost_composition.fig');
-cfg.png_eta2_cost = fullfile(cfg.supp_fig_dir, 'SupFig19d_LFP_gray_zone_Eta2_penalty_cost_composition.png');
+cfg.fig_eta2_cost = fullfile(cfg.supp_fig_dir, 'SupFig17b_LFP_gray_zone_Eta2_penalty_cost_composition.fig');
+cfg.png_eta2_cost = fullfile(cfg.supp_fig_dir, 'SupFig17b_LFP_gray_zone_Eta2_penalty_cost_composition.png');
 
-cfg.fig_eta1_compare = fullfile(cfg.supp_fig_dir, 'SupFig19e_LFP_gray_zone_fixed_vs_reoptimized_Eta1.fig');
-cfg.png_eta1_compare = fullfile(cfg.supp_fig_dir, 'SupFig19e_LFP_gray_zone_fixed_vs_reoptimized_Eta1.png');
+cfg.fig_eta1_compare = fullfile(cfg.supp_fig_dir, 'SupFig16c_LFP_gray_zone_fixed_vs_reoptimized_Eta1.fig');
+cfg.png_eta1_compare = fullfile(cfg.supp_fig_dir, 'SupFig16c_LFP_gray_zone_fixed_vs_reoptimized_Eta1.png');
 
-cfg.fig_eta2_compare = fullfile(cfg.supp_fig_dir, 'SupFig19f_LFP_gray_zone_fixed_vs_reoptimized_Eta2.fig');
-cfg.png_eta2_compare = fullfile(cfg.supp_fig_dir, 'SupFig19f_LFP_gray_zone_fixed_vs_reoptimized_Eta2.png');
+cfg.fig_eta2_compare = fullfile(cfg.supp_fig_dir, 'SupFig17c_LFP_gray_zone_fixed_vs_reoptimized_Eta2.fig');
+cfg.png_eta2_compare = fullfile(cfg.supp_fig_dir, 'SupFig17c_LFP_gray_zone_fixed_vs_reoptimized_Eta2.png');
 
 cfg.png_resolution = 600;
 
@@ -599,9 +599,9 @@ end
 eta_xlim = [0 120];
 eta_ticks = 0:20:120;
 
-%% Supplementary Fig. 19a: Eta_1 severe-trigger rate composition
+%% Supplementary Fig. 16a: Eta_1 severe-trigger rate composition
 fig1 = figure( ...
-    'Name', 'SupFig19a_LFP_gray_zone_Eta1_trigger_rate_composition', ...
+    'Name', 'SupFig16a_LFP_gray_zone_Eta1_trigger_rate_composition', ...
     'Color', 'w', ...
     'Position', [100, 80, 760, 560]);
 
@@ -682,9 +682,9 @@ set(gca, ...
 
 local_save_figure(fig1, cfg.fig_eta1_trigger, cfg.png_eta1_trigger, cfg.png_resolution);
 
-%% Supplementary Fig. 19b: Eta_1 penalty-cost composition
+%% Supplementary Fig. 16b: Eta_1 penalty-cost composition
 fig2 = figure( ...
-    'Name', 'SupFig19b_LFP_gray_zone_Eta1_penalty_cost_composition', ...
+    'Name', 'SupFig16b_LFP_gray_zone_Eta1_penalty_cost_composition', ...
     'Color', 'w', ...
     'Position', [140, 100, 760, 560]);
 
@@ -783,9 +783,9 @@ set(gca, ...
 
 local_save_figure(fig2, cfg.fig_eta1_cost, cfg.png_eta1_cost, cfg.png_resolution);
 
-%% Supplementary Fig. 19c: Eta_2 severe-trigger rate composition
+%% Supplementary Fig. 17a: Eta_2 severe-trigger rate composition
 fig3 = figure( ...
-    'Name', 'SupFig19c_LFP_gray_zone_Eta2_trigger_rate_composition', ...
+    'Name', 'SupFig17a_LFP_gray_zone_Eta2_trigger_rate_composition', ...
     'Color', 'w', ...
     'Position', [180, 120, 760, 560]);
 
@@ -866,9 +866,9 @@ set(gca, ...
 
 local_save_figure(fig3, cfg.fig_eta2_trigger, cfg.png_eta2_trigger, cfg.png_resolution);
 
-%% Supplementary Fig. 19d: Eta_2 penalty-cost composition
+%% Supplementary Fig. 17b: Eta_2 penalty-cost composition
 fig4 = figure( ...
-    'Name', 'SupFig19d_LFP_gray_zone_Eta2_penalty_cost_composition', ...
+    'Name', 'SupFig17b_LFP_gray_zone_Eta2_penalty_cost_composition', ...
     'Color', 'w', ...
     'Position', [220, 140, 760, 560]);
 
@@ -967,11 +967,11 @@ set(gca, ...
 
 local_save_figure(fig4, cfg.fig_eta2_cost, cfg.png_eta2_cost, cfg.png_resolution);
 
-%% Supplementary Fig. 19e: Fixed-policy versus re-optimized policy under eta_1
+%% Supplementary Fig. 16c: Fixed-policy versus re-optimized policy under eta_1
 if cfg.do_reoptimize
 
     fig5a = figure( ...
-        'Name', 'SupFig19e_LFP_gray_zone_fixed_vs_reoptimized_Eta1', ...
+        'Name', 'SupFig16c_LFP_gray_zone_fixed_vs_reoptimized_Eta1', ...
         'Color', 'w', ...
         'Position', [260, 160, 760, 560]);
 
@@ -1013,9 +1013,9 @@ if cfg.do_reoptimize
 
     local_save_figure(fig5a, cfg.fig_eta1_compare, cfg.png_eta1_compare, cfg.png_resolution);
 
-    %% Supplementary Fig. 19f: Fixed-policy versus re-optimized policy under eta_2
+    %% Supplementary Fig. 17c: Fixed-policy versus re-optimized policy under eta_2
     fig5b = figure( ...
-        'Name', 'SupFig19f_LFP_gray_zone_fixed_vs_reoptimized_Eta2', ...
+        'Name', 'SupFig17c_LFP_gray_zone_fixed_vs_reoptimized_Eta2', ...
         'Color', 'w', ...
         'Position', [300, 180, 760, 560]);
 

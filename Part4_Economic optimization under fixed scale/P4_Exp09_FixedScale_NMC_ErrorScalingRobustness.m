@@ -48,8 +48,8 @@ cfg.fig_policy_turnover = fullfile(cfg.extended_fig_dir, 'ExD08d_NMC_error_scali
 cfg.png_policy_turnover = fullfile(cfg.extended_fig_dir, 'ExD08d_NMC_error_scaling_policy_turnover.png');
 cfg.fig_action_allocation = fullfile(cfg.extended_fig_dir, 'ExD08e_NMC_error_scaling_action_allocation.fig');
 cfg.png_action_allocation = fullfile(cfg.extended_fig_dir, 'ExD08e_NMC_error_scaling_action_allocation.png');
-cfg.fig_thresholds = fullfile(cfg.extended_fig_dir, 'ExD08f_NMC_error_scaling_optimized_thresholds.fig');
-cfg.png_thresholds = fullfile(cfg.extended_fig_dir, 'ExD08f_NMC_error_scaling_optimized_thresholds.png');
+cfg.fig_thresholds = fullfile(cfg.extended_fig_dir, 'P4_Exp09_NMC_error_scaling_optimized_thresholds_diagnostic.fig');
+cfg.png_thresholds = fullfile(cfg.extended_fig_dir, 'P4_Exp09_NMC_error_scaling_optimized_thresholds_diagnostic.png');
 
 cfg.png_resolution = 600;
 
@@ -1100,9 +1100,9 @@ set(gca, ...
 
 local_save_figure(fig5, cfg.fig_action_allocation, cfg.png_action_allocation, cfg.png_resolution);
 
-%% 16) Figure 7f: optimized thresholds
+%% 16) Non-manuscript diagnostic: optimized thresholds
 fig6 = figure( ...
-    'Name', 'ExD08f_NMC_error_scaling_optimized_thresholds', ...
+    'Name', 'P4_Exp09_NMC_error_scaling_optimized_thresholds_diagnostic', ...
     'Color', 'w', ...
     'Units', 'centimeters', ...
     'Position', [4, 4, 7.8, 6.0]);

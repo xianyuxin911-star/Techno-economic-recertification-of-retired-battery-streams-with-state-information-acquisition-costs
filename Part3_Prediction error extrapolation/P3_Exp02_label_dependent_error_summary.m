@@ -71,19 +71,19 @@ cfg.png_panel_C = fullfile(cfg.ext_fig_dir, ...
     'ExD02c_representative_RMSE_distribution.png');
 
 cfg.fig_panel_D_few = fullfile(cfg.ext_fig_dir, ...
-    'ExD02d_prediction_cloud_few_labels.fig');
+    'ExD02d_source_prediction_cloud_few_labels.fig');
 cfg.png_panel_D_few = fullfile(cfg.ext_fig_dir, ...
-    'ExD02d_prediction_cloud_few_labels.png');
+    'ExD02d_source_prediction_cloud_few_labels.png');
 
 cfg.fig_panel_D_medium = fullfile(cfg.ext_fig_dir, ...
-    'ExD02e_prediction_cloud_medium_labels.fig');
+    'ExD02d_source_prediction_cloud_medium_labels.fig');
 cfg.png_panel_D_medium = fullfile(cfg.ext_fig_dir, ...
-    'ExD02e_prediction_cloud_medium_labels.png');
+    'ExD02d_source_prediction_cloud_medium_labels.png');
 
 cfg.fig_panel_D_large = fullfile(cfg.ext_fig_dir, ...
-    'ExD02f_prediction_cloud_large_labels.fig');
+    'ExD02d_source_prediction_cloud_large_labels.fig');
 cfg.png_panel_D_large = fullfile(cfg.ext_fig_dir, ...
-    'ExD02f_prediction_cloud_large_labels.png');
+    'ExD02d_source_prediction_cloud_large_labels.png');
 
 % Export settings.
 cfg.png_resolution = 600;

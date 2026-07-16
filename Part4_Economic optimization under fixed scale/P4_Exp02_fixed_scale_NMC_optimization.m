@@ -69,15 +69,15 @@ cfg.result_mat = fullfile(cfg.results_dir, 'P4_Exp02_FixedScale_NMC_Results.mat'
 
 cfg.summary_csv = fullfile(cfg.results_dir, 'P4_Exp02_FixedScale_NMC_Summary.csv');
 
-% Figure files for Supplementary Fig. XX.
-cfg.fig_cost_breakdown = fullfile(cfg.supplementary_fig_dir, 'SupFig13a_NMC_fixed_scale_cost_decomposition.fig');
-cfg.png_cost_breakdown = fullfile(cfg.supplementary_fig_dir, 'SupFig13a_NMC_fixed_scale_cost_decomposition.png');
+% Figure files for Supplementary Fig. 15.
+cfg.fig_cost_breakdown = fullfile(cfg.supplementary_fig_dir, 'SupFig15_NMC_fixed_scale_cost_decomposition.fig');
+cfg.png_cost_breakdown = fullfile(cfg.supplementary_fig_dir, 'SupFig15_NMC_fixed_scale_cost_decomposition.png');
 
 % Figure files for Main Fig. 3.
-cfg.fig_net_utility = fullfile(cfg.main_fig_dir, 'MainFig03e_NMC_net_value_curves.fig');
-cfg.png_net_utility = fullfile(cfg.main_fig_dir, 'MainFig03e_NMC_net_value_curves.png');
-cfg.fig_A3_breakdown = fullfile(cfg.main_fig_dir, 'MainFig03f_NMC_recycling_breakdown.fig');
-cfg.png_A3_breakdown = fullfile(cfg.main_fig_dir, 'MainFig03f_NMC_recycling_breakdown.png');
+cfg.fig_net_utility = fullfile(cfg.main_fig_dir, 'MainFig03c_NMC_net_value_curves.fig');
+cfg.png_net_utility = fullfile(cfg.main_fig_dir, 'MainFig03c_NMC_net_value_curves.png');
+cfg.fig_A3_breakdown = fullfile(cfg.main_fig_dir, 'MainFig03d_NMC_recycling_breakdown.fig');
+cfg.png_A3_breakdown = fullfile(cfg.main_fig_dir, 'MainFig03d_NMC_recycling_breakdown.png');
 
 % Simulation settings.
 cfg.N_sim = 100000;
@@ -686,7 +686,7 @@ end
 [G_env, ~] = max(G, [], 2);
 
 fig_net = figure( ...
- 'Name', 'MainFig03e_NMC_net_value_curves', ...
+ 'Name', 'MainFig03c_NMC_net_value_curves', ...
  'Color', 'w', ...
  'Position', [180, 120, 800, 520]);
 
@@ -871,7 +871,7 @@ save(cfg.workspace_mat, '-v7.3');
 fprintf('>>> Full fixed-scale NMC workspace saved to: %s\n', cfg.workspace_mat);
 
 fig_A3 = figure( ...
- 'Name', 'MainFig03f_NMC_recycling_breakdown', ...
+ 'Name', 'MainFig03d_NMC_recycling_breakdown', ...
  'Color', 'w', ...
  'Position', [220, 120, 980, 560]);
 

@@ -32,8 +32,8 @@ model_file = fullfile(output_model_dir, 'P1_SourceDomain_CNN_Model.mat');
 pred_file = fullfile(output_results_dir, 'P1_SourceDomain_CVPredictions.csv');
 metrics_file = fullfile(output_results_dir, 'P1_SourceDomain_CVMetrics.csv');
 
-exd_fig_file = fullfile(figure_exd_dir, 'ExD01b_SourceDomainPredictionPerformance.fig');
-exd_png_file = fullfile(figure_exd_dir, 'ExD01b_SourceDomainPredictionPerformance.png');
+exd_fig_file = fullfile(figure_exd_dir, 'ExD01a_SourceDomainPredictionPerformance.fig');
+exd_png_file = fullfile(figure_exd_dir, 'ExD01a_SourceDomainPredictionPerformance.png');
 
 %%  2. Load Dataset
 

@@ -21,7 +21,7 @@ Run `P5_Exp01` before `P5_Exp02`. Scripts `P5_Exp03`–`P5_Exp06` consume result
 
 **Run:** `P5_Exp01_scale_dependent_LFP_optimization`
 
-**Produces:** LFP result/workspace MAT files, scale summary, action-value decomposition, action-allocation data, and A3 inset data under `Output/Results/P5_Exp01_*`.
+**Produces:** LFP result/workspace MAT files, scale summary, action-value decomposition, `ExD05a_LFP_scale_dependent_action_allocation.csv`, and A3 inset data under `Output/Results/`.
 
 **Reproduces**
 
@@ -36,7 +36,7 @@ Run `P5_Exp01` before `P5_Exp02`. Scripts `P5_Exp03`–`P5_Exp06` consume result
 > **Extended Data Fig. 4c — LFP scale-dependent optimal thresholds**  
 > `Figures/Extended/ExD04c_LFP_scale_dependent_optimal_thresholds.png`
 
-The script also exports LFP action-allocation data used in Extended Data Fig. 5.
+The script exports `ExD05a_LFP_scale_dependent_action_allocation.csv` for Extended Data Fig. 5a.
 
 ---
 
@@ -46,7 +46,7 @@ The script also exports LFP action-allocation data used in Extended Data Fig. 5.
 
 **Reads:** the Part 3 residual model and the Step 1 LFP result file.
 
-**Produces:** NMC result/workspace MAT files, scale summary, manuscript-value summary, action-value decomposition, and action-allocation data under `Output/Results/P5_Exp02_*`.
+**Produces:** NMC result/workspace MAT files, scale summary, manuscript-value summary, action-value decomposition, and `ExD05b_NMC_scale_dependent_action_allocation.csv` under `Output/Results/`.
 
 **Reproduces**
 
@@ -58,7 +58,7 @@ The script also exports LFP action-allocation data used in Extended Data Fig. 5.
 > **Extended Data Fig. 4d — NMC scale-dependent optimal thresholds**  
 > `Figures/Extended/ExD04d_NMC_scale_dependent_optimal_thresholds.png`
 
-The script also exports NMC action-allocation data used in Extended Data Fig. 5.
+The script exports `ExD05b_NMC_scale_dependent_action_allocation.csv` for Extended Data Fig. 5b.
 
 ---
 
@@ -129,11 +129,11 @@ Output/Results/P5_Exp05_NMC_FixedKBenchmark_Data.mat
 
 **Reproduces:**
 
-- **Extended Data Fig. 6e:** LFP scale-dependent fixed-k additional cost per pack  
-  `Figures/Extended/ExD06e_LFP_FixedKBenchmark_PerPack.png`
+- **Extended Data Fig. 6c:** LFP scale-dependent fixed-k additional cost per pack  
+  `Figures/Extended/ExD06c_LFP_FixedKBenchmark_PerPack.png`
 
-- **Extended Data Fig. 6f:** NMC scale-dependent fixed-k additional cost per pack  
-  `Figures/Extended/ExD06f_NMC_FixedKBenchmark_PerPack.png`
+- **Extended Data Fig. 6d:** NMC scale-dependent fixed-k additional cost per pack  
+  `Figures/Extended/ExD06d_NMC_FixedKBenchmark_PerPack.png`
 
 ---
 

@@ -36,14 +36,14 @@ cfg.metrics_csv = fullfile(cfg.output_results_dir, 'P2_Exp08_TransferStrategy_Me
 cfg.pred_long_csv = fullfile(cfg.output_results_dir, 'P2_Exp08_TransferStrategy_PredictionsLong.csv');
 
 % Output figures.
-cfg.fig_tracking = fullfile(cfg.figure_dir, 'ExD01c_TransferStrategyTracking.fig');
-cfg.png_tracking = fullfile(cfg.figure_dir, 'ExD01c_TransferStrategyTracking.png');
+cfg.fig_tracking = fullfile(cfg.figure_dir, 'ExD01b_TransferStrategyTracking.fig');
+cfg.png_tracking = fullfile(cfg.figure_dir, 'ExD01b_TransferStrategyTracking.png');
 
-cfg.fig_error = fullfile(cfg.figure_dir, 'ExD01d_TransferStrategyErrorBoxplot.fig');
-cfg.png_error = fullfile(cfg.figure_dir, 'ExD01d_TransferStrategyErrorBoxplot.png');
+cfg.fig_error = fullfile(cfg.figure_dir, 'P2_Exp08_TransferStrategyErrorBoxplot_diagnostic.fig');
+cfg.png_error = fullfile(cfg.figure_dir, 'P2_Exp08_TransferStrategyErrorBoxplot_diagnostic.png');
 
-cfg.fig_metrics = fullfile(cfg.figure_dir, 'ExD01e_TransferStrategyRMSESummary.fig');
-cfg.png_metrics = fullfile(cfg.figure_dir, 'ExD01e_TransferStrategyRMSESummary.png');
+cfg.fig_metrics = fullfile(cfg.figure_dir, 'P2_Exp08_TransferStrategyRMSESummary_diagnostic.fig');
+cfg.png_metrics = fullfile(cfg.figure_dir, 'P2_Exp08_TransferStrategyRMSESummary_diagnostic.png');
 
 cfg.png_resolution = 600;
 
@@ -213,7 +213,7 @@ min_val = min([y_true; y_zero; y_frozen; y_ft; y_l2sp]) - 0.01;
 max_val = max([y_true; y_zero; y_frozen; y_ft; y_l2sp]) + 0.01;
 
 fig_tracking = figure( ...
-    'Name', 'P2_Exp08_TransferStrategyTracking', ...
+    'Name', 'ExD01b_TransferStrategyTracking', ...
     'Color', 'w', ...
     'Position', [120, 120, 1050, 560]);
 
@@ -294,7 +294,7 @@ exportgraphics(fig_tracking, cfg.png_tracking, 'Resolution', cfg.png_resolution)
 
 %% 7) Panel D: Error distribution boxplot with scatter
 fig_error = figure( ...
-    'Name', 'P2_Exp08_ErrorBoxplot', ...
+    'Name', 'P2_Exp08_TransferStrategyErrorBoxplot_diagnostic', ...
     'Color', 'w', ...
     'Position', [200, 200, 750, 500]);
 
@@ -359,7 +359,7 @@ exportgraphics(fig_error, cfg.png_error, 'Resolution', cfg.png_resolution);
 
 %% 8) Panel E: RMSE lollipop chart
 fig_metrics = figure( ...
-    'Name', 'P2_Exp08_RMSESummary', ...
+    'Name', 'P2_Exp08_TransferStrategyRMSESummary_diagnostic', ...
     'Color', 'w', ...
     'Position', [280, 280, 620, 500]);
 

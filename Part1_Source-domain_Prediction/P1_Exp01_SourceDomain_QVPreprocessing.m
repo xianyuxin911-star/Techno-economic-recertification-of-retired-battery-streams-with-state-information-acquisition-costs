@@ -29,8 +29,8 @@ end
 
 dataset_file = fullfile(output_data_dir, 'P1_SourceDomain_Dataset.mat');
 
-sup_fig_file = fullfile(figure_sup_dir, 'SupFig01_SourceDomain_QVCurves.fig');
-sup_png_file = fullfile(figure_sup_dir, 'SupFig01_SourceDomain_QVCurves.png');
+sup_fig_file = fullfile(figure_sup_dir, 'SupFig01a_SourceDomain_QVCurves.fig');
+sup_png_file = fullfile(figure_sup_dir, 'SupFig01a_SourceDomain_QVCurves.png');
 
 
 %%  2. File Search & Initialization

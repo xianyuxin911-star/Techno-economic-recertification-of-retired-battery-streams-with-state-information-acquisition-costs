@@ -53,16 +53,16 @@ cfg.output_data_mat = fullfile(cfg.results_dir, ...
 
 % Output figures.
 cfg.lfp_fig = fullfile(cfg.extended_fig_dir, ...
- 'ExD06e_LFP_FixedKBenchmark_PerPack.fig');
+ 'ExD06c_LFP_FixedKBenchmark_PerPack.fig');
 
 cfg.lfp_png = fullfile(cfg.extended_fig_dir, ...
- 'ExD06e_LFP_FixedKBenchmark_PerPack.png');
+ 'ExD06c_LFP_FixedKBenchmark_PerPack.png');
 
 cfg.nmc_fig = fullfile(cfg.extended_fig_dir, ...
- 'ExD06f_NMC_FixedKBenchmark_PerPack.fig');
+ 'ExD06d_NMC_FixedKBenchmark_PerPack.fig');
 
 cfg.nmc_png = fullfile(cfg.extended_fig_dir, ...
- 'ExD06f_NMC_FixedKBenchmark_PerPack.png');
+ 'ExD06d_NMC_FixedKBenchmark_PerPack.png');
 
 cfg.png_resolution = 600;
 

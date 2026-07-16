@@ -49,7 +49,7 @@ Output/Results/P2_Exp02_ZeroShot_MinWorst1_{Metrics,PackPredictions,CellPredicti
 Output/Results/P2_Exp02_ZeroShot_MinWorst1_Results.mat
 ```
 
-**Figure use:** supplies the zero-shot results used in Extended Data Fig. 1c–e by `P2_Exp08`.
+**Figure use:** supplies the zero-shot results used in Extended Data Fig. 1b by `P2_Exp08`.
 
 ---
 
@@ -64,7 +64,7 @@ Output/Results/P2_Exp03_FrozenEncoder_{Metrics,PackPredictions}.csv
 Output/Results/P2_Exp03_FrozenEncoder_Results.mat
 ```
 
-**Figure use:** supplies the frozen-encoder results used in Extended Data Fig. 1c–e and the frozen-depth reference used by `P2_Exp11`.
+**Figure use:** supplies the frozen-encoder results used in Extended Data Fig. 1b and the frozen-depth reference used by `P2_Exp11`.
 
 ---
 
@@ -79,7 +79,7 @@ Output/Results/P2_Exp04_FineTune_{Metrics,PackPredictions}.csv
 Output/Results/P2_Exp04_FineTune_Results.mat
 ```
 
-**Figure use:** supplies the fine-tuning results used in Extended Data Fig. 1c–e.
+**Figure use:** supplies the fine-tuning results used in Extended Data Fig. 1b.
 
 ---
 
@@ -94,7 +94,7 @@ Output/Results/P2_Exp05_FineTuneL2SP_{Metrics,PackPredictions,CellAttention}.csv
 Output/Results/P2_Exp05_FineTuneL2SP_Results.mat
 ```
 
-**Figure use:** supplies the L2-SP results used in Extended Data Fig. 1c–e and the Last3Conv reference used by `P2_Exp11`.
+**Figure use:** supplies the L2-SP results used in Extended Data Fig. 1b and the Last3Conv reference used by `P2_Exp11`.
 
 ---
 
@@ -109,7 +109,7 @@ Output/Results/P2_Exp06_RegressionHead_{Metrics,PackPredictions}.csv
 Output/Results/P2_Exp06_RegressionHead_Results.mat
 ```
 
-**Figure use:** supplies the MLP, GPR, and SVR predictions visualized as Extended Data Fig. 1f–h by `P2_Exp09`.
+**Figure use:** supplies the MLP, GPR, and SVR predictions visualized as Supplementary Fig. 4a–c by `P2_Exp09`.
 
 ---
 
@@ -124,7 +124,7 @@ Output/Results/P2_Exp07_AttentionPoolingAblation_Metrics.csv
 Output/Results/P2_Exp07_AttentionPoolingAblation_Results.mat
 ```
 
-**Figure use:** supplies the data visualized as Extended Data Fig. 1i–k by `P2_Exp10`.
+**Figure use:** supplies the data visualized as Extended Data Fig. 1c–e by `P2_Exp10`.
 
 ---
 
@@ -143,14 +143,15 @@ Output/Results/P2_Exp08_TransferStrategy_PredictionsLong.csv
 
 **Reproduces**
 
-> **Extended Data Fig. 1c — Transfer-strategy tracking**  
-> `Figures/Extended/ExD01c_TransferStrategyTracking.png`
->
-> **Extended Data Fig. 1d — Transfer-strategy error distributions**  
-> `Figures/Extended/ExD01d_TransferStrategyErrorBoxplot.png`
->
-> **Extended Data Fig. 1e — Transfer-strategy RMSE summary**  
-> `Figures/Extended/ExD01e_TransferStrategyRMSESummary.png`
+> **Extended Data Fig. 1b — Transfer-strategy prediction trajectories**  
+> `Figures/Extended/ExD01b_TransferStrategyTracking.png`
+
+The script also writes two non-manuscript diagnostic figures:
+
+```text
+Figures/Extended/P2_Exp08_TransferStrategyErrorBoxplot_diagnostic.png
+Figures/Extended/P2_Exp08_TransferStrategyRMSESummary_diagnostic.png
+```
 
 ---
 
@@ -164,10 +165,10 @@ Output/Results/P2_Exp08_TransferStrategy_PredictionsLong.csv
 
 **Reproduces**
 
-> **Extended Data Fig. 1f–h — Regression-head parity, RMSE/MAPE, and R² comparisons**  
-> `Figures/Extended/ExD01f_regression_head_parity_plot.png`  
-> `Figures/Extended/ExD01g_regression_head_RMSE_MAPE_lollipop.png`  
-> `Figures/Extended/ExD01h_regression_head_R2_gradient.png`
+> **Supplementary Fig. 4a–c — Regression-head parity, R², and RMSE/MAPE comparisons**  
+> `Figures/Supplementary/SupFig04a_regression_head_parity_plot.png`  
+> `Figures/Supplementary/SupFig04b_regression_head_R2_gradient.png`  
+> `Figures/Supplementary/SupFig04c_regression_head_RMSE_MAPE_lollipop.png`
 
 ---
 
@@ -179,10 +180,10 @@ Output/Results/P2_Exp08_TransferStrategy_PredictionsLong.csv
 
 **Reproduces**
 
-> **Extended Data Fig. 1i–k — Attention tracking, error heat map, and maximum-attention heat map**  
-> `Figures/Extended/ExD01i_attention_tracking.png`  
-> `Figures/Extended/ExD01j_attention_error_heatmap.png`  
-> `Figures/Extended/ExD01k_max_attention_heatmap.png`
+> **Extended Data Fig. 1c–e — Attention tracking, error heat map, and maximum-attention heat map**  
+> `Figures/Extended/ExD01c_attention_tracking.png`  
+> `Figures/Extended/ExD01d_attention_error_heatmap.png`  
+> `Figures/Extended/ExD01e_max_attention_heatmap.png`
 
 ---
 

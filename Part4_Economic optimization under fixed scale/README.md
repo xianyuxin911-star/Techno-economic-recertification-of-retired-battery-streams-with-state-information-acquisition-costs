@@ -55,12 +55,12 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 
 **Reproduces**
 
-> **Main Fig. 3e–f — NMC net-value curves and recycling-value breakdown**  
-> `Figures/Main/MainFig03e_NMC_net_value_curves.png`  
-> `Figures/Main/MainFig03f_NMC_recycling_breakdown.png`
+> **Main Fig. 3c–d — NMC net-value curves and recycling-value breakdown**  
+> `Figures/Main/MainFig03c_NMC_net_value_curves.png`  
+> `Figures/Main/MainFig03d_NMC_recycling_breakdown.png`
 >
-> **Supplementary Fig. 13a — NMC fixed-scale cost decomposition**  
-> `Figures/Supplementary/SupFig13a_NMC_fixed_scale_cost_decomposition.png`
+> **Supplementary Fig. 15 — NMC fixed-scale cost decomposition**  
+> `Figures/Supplementary/SupFig15_NMC_fixed_scale_cost_decomposition.png`
 
 ---
 
@@ -74,9 +74,9 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 
 **Reproduces**
 
-> **Main Fig. 3c–d — Chemistry-driven action reallocation and refurbishment–recycling value gap**  
-> `Figures/Main/MainFig03c_LFP_NMC_action_share_reallocation.png`  
-> `Figures/Main/MainFig03d_refurbishment_recycling_value_gap.png`
+> **Main Fig. 3e–f — Chemistry-driven action reallocation and refurbishment–recycling value gap**  
+> `Figures/Main/MainFig03e_LFP_NMC_action_share_reallocation.png`  
+> `Figures/Main/MainFig03f_refurbishment_recycling_value_gap.png`
 
 ---
 
@@ -136,11 +136,11 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 
 **Reproduces:**
 
-- **Extended Data Fig. 6c:** LFP SOH-label-cost sensitivity  
-  `Figures/Extended/ExD06c_LFP_SOH_label_cost_sensitivity.png`
+- **Extended Data Fig. 7a:** LFP SOH-label-cost sensitivity  
+  `Figures/Extended/ExD07a_LFP_SOH_label_cost_sensitivity.png`
 
-- **Extended Data Fig. 6d:** Optimized cost decomposition under varying SOH-label costs  
-  `Figures/Extended/ExD06d_LFP_SOH_label_cost_decomposition.png`
+- **Extended Data Fig. 7b:** Optimized cost decomposition under varying SOH-label costs  
+  `Figures/Extended/ExD07b_LFP_SOH_label_cost_decomposition.png`
 
 ---
 
@@ -154,10 +154,10 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 
 **Reproduces**
 
-> **Extended Data Fig. 7a–c — Action shares, thresholds, and cost decomposition**  
-> `Figures/Extended/ExD07a_LFP_refurbishment_improvement_action_shares.png`  
-> `Figures/Extended/ExD07b_LFP_refurbishment_improvement_thresholds.png`  
-> `Figures/Extended/ExD07c_LFP_refurbishment_improvement_cost_decomposition.png`
+> **Extended Data Fig. 9a–c — Action shares, thresholds, and cost decomposition**  
+> `Figures/Extended/ExD09a_LFP_refurbishment_improvement_action_shares.png`  
+> `Figures/Extended/ExD09b_LFP_refurbishment_improvement_thresholds.png`  
+> `Figures/Extended/ExD09c_LFP_refurbishment_improvement_cost_decomposition.png`
 
 ---
 
@@ -171,13 +171,18 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 
 **Reproduces**
 
-> **Extended Data Fig. 8a–f — Prediction error, decision loss, value retention, policy turnover, action allocation, and thresholds**  
+> **Extended Data Fig. 8a–e — Prediction error, decision loss, value retention, policy turnover, and action allocation**  
 > `Figures/Extended/ExD08a_NMC_error_scaling_prediction_error_metrics.png`  
 > `Figures/Extended/ExD08b_NMC_error_scaling_decision_loss_decomposition.png`  
 > `Figures/Extended/ExD08c_NMC_error_scaling_net_value_retention.png`  
 > `Figures/Extended/ExD08d_NMC_error_scaling_policy_turnover.png`  
-> `Figures/Extended/ExD08e_NMC_error_scaling_action_allocation.png`  
-> `Figures/Extended/ExD08f_NMC_error_scaling_optimized_thresholds.png`
+> `Figures/Extended/ExD08e_NMC_error_scaling_action_allocation.png`
+
+The optimized-threshold surface is retained as a non-manuscript diagnostic:
+
+```text
+Figures/Extended/P4_Exp09_NMC_error_scaling_optimized_thresholds_diagnostic.png
+```
 
 ---
 
@@ -191,9 +196,13 @@ Output/Results/P4_Exp02_FixedScale_NMC_Summary.csv
 
 **Reproduces**
 
-> **Supplementary Fig. 19a–f — Gray-zone trigger rates, penalty costs, and policy re-optimization**  
-> `Figures/Supplementary/SupFig19a_LFP_gray_zone_Eta1_trigger_rate_composition.png` through  
-> `Figures/Supplementary/SupFig19f_LFP_gray_zone_fixed_vs_reoptimized_Eta2.png`
+> **Supplementary Fig. 16a–c — Eta1 gray-zone trigger rates, penalty costs, and policy re-optimization**  
+> `Figures/Supplementary/SupFig16a_LFP_gray_zone_Eta1_trigger_rate_composition.png` through  
+> `Figures/Supplementary/SupFig16c_LFP_gray_zone_fixed_vs_reoptimized_Eta1.png`
+>
+> **Supplementary Fig. 17a–c — Eta2 gray-zone trigger rates, penalty costs, and policy re-optimization**  
+> `Figures/Supplementary/SupFig17a_LFP_gray_zone_Eta2_trigger_rate_composition.png` through  
+> `Figures/Supplementary/SupFig17c_LFP_gray_zone_fixed_vs_reoptimized_Eta2.png`
 
 
 ## Extended Data Fig. 6 panel assignment
@@ -202,10 +211,8 @@ The panels of Extended Data Fig. 6 are assigned as follows:
 
 - **Extended Data Fig. 6a:** LFP fixed-scale fixed-k benchmark (`P4_Exp04`)
 - **Extended Data Fig. 6b:** NMC fixed-scale fixed-k benchmark (`P4_Exp05`)
-- **Extended Data Fig. 6c:** LFP SOH-label-cost sensitivity (`P4_Exp07`)
-- **Extended Data Fig. 6d:** LFP optimized cost decomposition under varying SOH-label costs (`P4_Exp07`)
-- **Extended Data Fig. 6e:** LFP scale-dependent fixed-k additional cost per pack (`P5_Exp06`)
-- **Extended Data Fig. 6f:** NMC scale-dependent fixed-k additional cost per pack (`P5_Exp06`)
+- **Extended Data Fig. 6c:** LFP scale-dependent fixed-k additional cost per pack (`P5_Exp06`)
+- **Extended Data Fig. 6d:** NMC scale-dependent fixed-k additional cost per pack (`P5_Exp06`)
 
 The figure identifiers used by the current MATLAB scripts are consistent with this panel assignment.
 

@@ -53,7 +53,7 @@ cfg.result_mat = fullfile(cfg.results_dir, 'P5_Exp01_ScaleDependent_LFP_Results.
 cfg.workspace_mat = fullfile(cfg.results_dir, 'P5_Exp01_ScaleDependent_LFP_Workspace.mat');
 cfg.summary_csv = fullfile(cfg.results_dir, 'P5_Exp01_ScaleDependent_LFP_Summary.csv');
 cfg.action_value_csv = fullfile(cfg.results_dir, 'P5_Exp01_ScaleDependent_LFP_ActionValueDecomposition.csv');
-cfg.action_allocation_csv = fullfile(cfg.results_dir, 'P5_Exp01_ScaleDependent_LFP_ActionAllocationForExD05.csv');
+cfg.action_allocation_csv = fullfile(cfg.results_dir, 'ExD05a_LFP_scale_dependent_action_allocation.csv');
 cfg.a3_inset_csv = fullfile(cfg.results_dir,'P5_Exp01_ScaleDependent_LFP_A3Inset.csv');
 
 % Figure export settings.

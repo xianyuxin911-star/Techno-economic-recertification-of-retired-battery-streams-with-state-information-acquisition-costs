@@ -47,8 +47,8 @@ Output/Data/P1_SourceDomain_Dataset.mat
 
 **Reproduces**
 
-> **Supplementary Fig. 1 — Source-domain Q–V curves**  
-> `Figures/Supplementary/SupFig01_SourceDomain_QVCurves.png`
+> **Supplementary Fig. 1a — Source-domain Q–V curves**  
+> `Figures/Supplementary/SupFig01a_SourceDomain_QVCurves.png`
 
 The script extracts Step-7 discharge Q–V curves over the normalized-capacity window 0.70–0.86, resamples each curve to 512 points, and constructs the source-domain CNN dataset.
 
@@ -78,8 +78,8 @@ Output/Results/P1_SourceDomain_CVMetrics.csv
 
 **Reproduces**
 
-> **Extended Data Fig. 1b — Source-domain prediction performance**  
-> `Figures/Extended/ExD01b_SourceDomainPredictionPerformance.png`
+> **Extended Data Fig. 1a — Source-domain prediction performance**  
+> `Figures/Extended/ExD01a_SourceDomainPredictionPerformance.png`
 
 The script performs five-fold cross-validation, exports sample- and fold-level prediction results, and trains the final source-domain CNN used by Parts 2 and 3.
 
@@ -130,10 +130,10 @@ The MAT file contains:
 #### Manuscript figure
 
 ```text
-Figures/Supplementary/SupFig01_SourceDomain_QVCurves.png
+Figures/Supplementary/SupFig01a_SourceDomain_QVCurves.png
 ```
 
-**Corresponds to Supplementary Fig. 1.**  
+**Corresponds to Supplementary Fig. 1a.**  
 The figure displays the normalized-capacity Q–V curves of the source-domain cells, with curve colour indicating SOH.
 
 ### 2. `P1_Exp02_SourceDomain_CNNTraining_CV.m`
@@ -171,10 +171,10 @@ Output/Results/P1_SourceDomain_CVMetrics.csv
 #### Manuscript figure
 
 ```text
-Figures/Extended/ExD01b_SourceDomainPredictionPerformance.png
+Figures/Extended/ExD01a_SourceDomainPredictionPerformance.png
 ```
 
-**Corresponds to Extended Data Fig. 1b.**  
+**Corresponds to Extended Data Fig. 1a.**  
 The figure combines:
 
 - a true-versus-predicted SOH parity plot;

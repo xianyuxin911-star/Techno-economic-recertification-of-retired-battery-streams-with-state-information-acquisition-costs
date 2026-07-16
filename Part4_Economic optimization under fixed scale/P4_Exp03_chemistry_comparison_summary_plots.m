@@ -3,7 +3,7 @@
 %
 % Purpose:
 % This script generates the fixed-scale LFP-versus-NMC chemistry-comparison
-% outputs used in Main Fig. 3c-d.
+% outputs used in Main Fig. 3e-f.
 %
 % The comparison is constructed from the Part4 Exp01 and Exp02
 % sample-level outputs:
@@ -86,16 +86,16 @@ cfg.result_mat = fullfile(cfg.results_dir, ...
 
 % Main Fig. 3 outputs.
 cfg.fig_value_gap = fullfile(cfg.main_fig_dir, ...
- 'MainFig03d_refurbishment_recycling_value_gap.fig');
+ 'MainFig03f_refurbishment_recycling_value_gap.fig');
 
 cfg.png_value_gap = fullfile(cfg.main_fig_dir, ...
- 'MainFig03d_refurbishment_recycling_value_gap.png');
+ 'MainFig03f_refurbishment_recycling_value_gap.png');
 
 cfg.fig_alluvial = fullfile(cfg.main_fig_dir, ...
- 'MainFig03c_LFP_NMC_action_share_reallocation.fig');
+ 'MainFig03e_LFP_NMC_action_share_reallocation.fig');
 
 cfg.png_alluvial = fullfile(cfg.main_fig_dir, ...
- 'MainFig03c_LFP_NMC_action_share_reallocation.png');
+ 'MainFig03e_LFP_NMC_action_share_reallocation.png');
 
 % Common curve-estimation settings.
 cfg.soh_grid_min = 0.40;
@@ -455,7 +455,7 @@ disp(' ');
 disp('========== Expected net-value gaps at representative predicted SOH ==========');
 disp(RepresentativeSOHTable);
 
-%% 7) Main Fig. 3d: chemistry-dependent A3-A2 expected net-value gap
+%% 7) Main Fig. 3f: chemistry-dependent A3-A2 expected net-value gap
 color_LFP = [0.000, 0.447, 0.741];
 color_NMC = [0.850, 0.325, 0.098];
 color_fill = [0.82, 0.82, 0.82];
@@ -468,7 +468,7 @@ end
 
 fig_D32 = figure( ...
  'Color', 'w', ...
- 'Name', 'MainFig03d_refurbishment_recycling_value_gap', ...
+ 'Name', 'MainFig03f_refurbishment_recycling_value_gap', ...
  'Position', [100, 80, 920, 620]);
 
 hold on;
@@ -638,7 +638,7 @@ local_save_figure( ...
  cfg.png_value_gap, ...
  cfg.png_resolution);
 
-fprintf('>>> Saved Main Fig. 3d: %s\n', cfg.png_value_gap);
+fprintf('>>> Saved Main Fig. 3f: %s\n', cfg.png_value_gap);
 
 %% 8) Construct chemistry-specific action transitions on the common population
 % Unlike the original implementation, this section does not apply both
@@ -716,7 +716,7 @@ disp(' ');
 disp('========== Chemistry-specific optimized action shares ==========');
 disp(ActionShareTable);
 
-%% 9) Main Fig. 3c: alluvial-style chemistry reallocation plot
+%% 9) Main Fig. 3e: alluvial-style chemistry reallocation plot
 color_A3 = [0.850, 0.325, 0.098];
 color_A2 = [0.466, 0.674, 0.188];
 color_A1 = [0.000, 0.447, 0.741];
@@ -728,7 +728,7 @@ color_map = [ ...
 
 fig_alluvial = figure( ...
  'Color', 'w', ...
- 'Name', 'MainFig03c_LFP_NMC_action_share_reallocation', ...
+ 'Name', 'MainFig03e_LFP_NMC_action_share_reallocation', ...
  'Position', [120, 80, 980, 620]);
 
 ax = axes('Parent', fig_alluvial);
@@ -998,7 +998,7 @@ local_save_figure( ...
  cfg.png_alluvial, ...
  cfg.png_resolution);
 
-fprintf('>>> Saved Main Fig. 3c: %s\n', cfg.png_alluvial);
+fprintf('>>> Saved Main Fig. 3e: %s\n', cfg.png_alluvial);
 
 %% 10) Diagnostic summary and result export
 mean_abs_shift_D32 = mean(abs(Shift_D32_rep), 'omitnan');
