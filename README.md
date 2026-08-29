@@ -1,52 +1,74 @@
-# Techno-economic recertification of retired battery streams with state-information acquisition costs
+# Techno-economic recertification of chemical and asset streams from retired batteries with state-information acquisition costs
 
-This repository provides the MATLAB implementation and battery input data for a cell-to-pack transfer-learning and techno-economic analysis framework for retired battery recertification.
+This repository contains the minimal MATLAB workflow needed to connect cell-to-pack state-of-health (SOH) prediction with the techno-economic analysis (TEA) reported in the main figures.
 
-The workflow connects battery state-of-health (SOH) prediction with downstream recertification decisions. It first trains a source-domain cell-level model, transfers the learned representation to target-domain battery packs, evaluates how prediction uncertainty changes with the number of labelled packs, and then optimizes state-information acquisition and recertification decisions under fixed and varying deployment scales.
+## Public-release scope
 
-## Workflow
+The public repository intentionally retains only:
 
-The project is organized into five sequential parts:
+- the upstream prediction and prediction-error calculations required by the TEA;
+- the fixed- and varied-scale optimization scripts that produce Main Figs. 2b–5g;
+- the input data and shared functions required by those scripts.
 
-1. **Source-domain prediction**  
-   Preprocess source-domain battery data and train a cell-level convolutional neural network for SOH prediction.
+Conceptual illustrations, including Main Fig. 2a, are not code-generated. Standalone scripts used only for Extended Data figures, Supplementary figures, ablations, alternative prediction baselines, additional sensitivity analyses, or exploratory market-scale extensions are outside this public-release scope.
 
-2. **Target-domain prediction**  
-   Transfer the source-domain representation to pack-level SOH prediction and compare zero-shot, frozen-encoder, fine-tuning, L2-SP, regression-head, and attention-pooling strategies.
-
-3. **Prediction-error extrapolation**  
-   Use nested resampling to quantify label-dependent prediction errors and extrapolate the residual-error distribution as the number of labelled target packs changes.
-
-4. **Economic optimization under fixed scale**  
-   Optimize the number of labelled packs and SOH decision thresholds for LFP and NMC battery recertification under a fixed deployment scale.
-
-5. **Economic optimization under varied scale**  
-   Extend the optimization to scale-dependent deployment, robustness analyses, fixed-label benchmarks, and market-scale scenarios.
-
-## Repository structure
+## Computational chain
 
 ```text
-.
-├── Part1_Source-domain_Prediction/
-│   ├── Source_Data/                 # Source-domain battery input data
-│   ├── P1_Exp01_*.m                 # Data preprocessing
-│   └── P1_Exp02_*.m                 # CNN training and cross-validation
-├── Part2_Target-domain_Prediction/
-│   ├── Target_Data/                 # Target-domain battery-pack input data
-│   └── P2_Exp01_*.m ... P2_Exp11_*.m
-├── Part3_Prediction error extrapolation/
-│   └── P3_Exp01_*.m ... P3_Exp04_*.m
-├── Part4_Economic optimization under fixed scale/
-│   ├── Input/                       # LFP and NMC SOH input tables
-│   ├── Function/                    # Shared helper function
-│   └── P4_Exp01_*.m ... P4_Exp10_*.m
-└── Part5_Economic optimization under varied scale/
-    ├── Input/                       # LFP and NMC SOH input tables
-    ├── Function/                    # Shared helper function
-    └── P5_Exp01_*.m ... P5_Exp07_*.m
+Source-domain battery data
+        |
+        v
+P1_Exp01: source-data preprocessing
+        |
+        v
+P1_Exp02: source CNN training
+        |
+        +-------------------------------+
+        |                               |
+        v                               v
+P2_Exp01: target-data preparation   P2_Exp05: selected L2-SP predictor
+        |
+        v
+P3_Exp01: nested-resampling L2-SP prediction and error evaluation
+        |
+        v
+P3_Exp03: label-dependent residual extrapolation
+        |
+        v
+P3_Exp03_ResidualExtrapolation_Model.mat
+        |
+        +-------------------------------+
+        |                               |
+        v                               v
+Part 4: fixed-scale TEA           Part 5: varied-scale TEA
+        |                               |
+        +---------------+---------------+
+                        v
+                  Main Figs. 2b–5g
 ```
 
-Generated `Output/` and `Figures/` directories are intentionally excluded from the repository. They are recreated locally when the corresponding scripts are run.
+`P2_Exp05` is retained as the transparent implementation of the selected L2-SP transfer-learning predictor. The error model used by the TEA is generated independently by `P3_Exp01`, which applies the same L2-SP approach inside nested resampling.
+
+## Retained scripts and main-figure mapping
+
+| Part | Retained script | Role or main-figure output |
+|---|---|---|
+| 1 | `P1_Exp01_SourceDomain_QVPreprocessing.m` | Prepare the source-domain CNN dataset |
+| 1 | `P1_Exp02_SourceDomain_CNNTraining_CV.m` | Train the source CNN used by Part 3 |
+| 2 | `P2_Exp01_target_data_processing.m` | Prepare the target-pack dataset used by Part 3 |
+| 2 | `P2_Exp05_fine_tuning_L2SP_attention_prediction.m` | Selected target-domain predictor |
+| 3 | `P3_Exp01_NestedResampling_ErrorEvaluation.m` | Generate label-dependent prediction residuals |
+| 3 | `P3_Exp03_label_dependent_residual_extrapolation.m` | Export the residual model consumed by Parts 4 and 5 |
+| 4 | `P4_Exp01_fixed_scale_LFP_optimization.m` | Main Fig. 2b–e and Main Fig. 3a–b |
+| 4 | `P4_Exp02_fixed_scale_NMC_optimization.m` | Main Fig. 3c–d |
+| 4 | `P4_Exp03_chemistry_comparison_summary_plots.m` | Main Fig. 3e–f |
+| 5 | `P5_Exp01_scale_dependent_LFP_optimization.m` | Main Fig. 4a–f |
+| 5 | `P5_Exp02_scale_dependent_NMC_optimization.m` | Main Fig. 5a–c |
+| 5 | `P5_Exp03_NMC_error_scaling_scale_robustness.m` | Main Fig. 5d–f |
+| 5 | `P5_Exp04_LFP_FixedKBenchmark_Heatmap.m` | Main Fig. 4g |
+| 5 | `P5_Exp05_NMC_FixedKBenchmark_Heatmap.m` | Main Fig. 5g |
+
+Two identical copies of `local_build_noise_by_k.m` are retained in the Part 4 and Part 5 `Function/` folders so that the existing relative paths remain unchanged.
 
 ## Requirements
 
@@ -54,71 +76,58 @@ Generated `Output/` and `Figures/` directories are intentionally excluded from t
 - Deep Learning Toolbox
 - Statistics and Machine Learning Toolbox
 
-The deep-learning experiments can be computationally intensive. Random seeds are fixed in the main training and resampling scripts where applicable.
+The CNN training and nested-resampling experiments are computationally intensive. The principal training and resampling scripts use fixed random seeds where applicable.
 
-## Reproduction workflow
+## Full reproduction order
 
-Run scripts from their own Part directory. The scripts determine paths relative to their file locations.
-
-### Part 1: source-domain model
+Run each script from its own Part directory.
 
 ```matlab
+% Part 1
 P1_Exp01_SourceDomain_QVPreprocessing
 P1_Exp02_SourceDomain_CNNTraining_CV
-```
 
-These scripts preprocess the source-domain battery files and generate the source CNN model required by Parts 2 and 3.
-
-### Part 2: target-domain transfer learning
-
-First run:
-
-```matlab
+% Part 2
 P2_Exp01_target_data_processing
-```
+P2_Exp05_fine_tuning_L2SP_attention_prediction   % selected-method reference
 
-Then run the required prediction experiments:
-
-```matlab
-P2_Exp02_zero_shot_min_worst1_prediction
-P2_Exp03_frozen_encoder_attention_prediction
-P2_Exp04_fine_tuning_attention_prediction
-P2_Exp05_fine_tuning_L2SP_attention_prediction
-```
-
-The remaining Part 2 scripts perform regression-head comparisons, attention-pooling ablations, transfer-strategy summaries, and fine-tuning-depth analyses.
-
-### Part 3: label-dependent error model
-
-```matlab
+% Part 3
 P3_Exp01_NestedResampling_ErrorEvaluation
-P3_Exp02_label_dependent_error_summary
 P3_Exp03_label_dependent_residual_extrapolation
-P3_Exp04_ResidualRegionBoundaryRobustness
+
+% Part 4
+P4_Exp01_fixed_scale_LFP_optimization
+P4_Exp02_fixed_scale_NMC_optimization
+P4_Exp03_chemistry_comparison_summary_plots
+
+% Part 5
+P5_Exp01_scale_dependent_LFP_optimization
+P5_Exp02_scale_dependent_NMC_optimization
+P5_Exp03_NMC_error_scaling_scale_robustness
+P5_Exp04_LFP_FixedKBenchmark_Heatmap
+P5_Exp05_NMC_FixedKBenchmark_Heatmap
 ```
 
-Part 3 depends on the processed target data and source model produced by Parts 1 and 2.
+Part 3 produces:
 
-### Part 4: fixed-scale optimization
+```text
+Part3_Prediction error extrapolation/Output/Results/
+    P3_Exp03_ResidualExtrapolation_Model.mat
+```
 
-Run `P4_Exp01_fixed_scale_LFP_optimization.m` and `P4_Exp02_fixed_scale_NMC_optimization.m` first. The subsequent Part 4 scripts use these baseline results for chemistry comparisons, regret benchmarks, and sensitivity or robustness analyses.
+This file is the direct prediction-to-TEA interface consumed by Parts 4 and 5.
 
-### Part 5: scale-dependent optimization
+## Inputs and generated results
 
-Run `P5_Exp01_scale_dependent_LFP_optimization.m` followed by `P5_Exp02_scale_dependent_NMC_optimization.m`. The remaining scripts provide robustness analyses, fixed-label benchmarks, per-pack comparisons, and the extended market-scale analysis.
-
-## Data and results
-
-The repository contains the battery input data needed by the MATLAB workflow:
+Version-controlled inputs are located in:
 
 - `Part1_Source-domain_Prediction/Source_Data/`
 - `Part2_Target-domain_Prediction/Target_Data/`
 - `Part4_Economic optimization under fixed scale/Input/`
 - `Part5_Economic optimization under varied scale/Input/`
 
-Intermediate models, generated workspaces, numerical results, and figures are not version-controlled. They are saved locally under the relevant `Output/` and `Figures/` directories.
+Generated `Output/` and `Figures/` directories are excluded by `.gitignore` and are recreated locally. Some retained core scripts also emit ancillary diagnostic or secondary outputs because those calculations are integrated with the main workflow; no standalone secondary-analysis scripts are retained.
 
 ## Citation
 
 Citation information will be added when the accompanying manuscript is available.
-
