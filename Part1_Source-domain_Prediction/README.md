@@ -43,7 +43,7 @@ Output/Results/P1_SourceDomain_CVPredictions.csv
 Output/Results/P1_SourceDomain_CVMetrics.csv
 ```
 
-`P1_SourceDomain_CNN_Model.mat` is the required source-model input for `P2_Exp05` and `P3_Exp01`.
+`P1_SourceDomain_CNN_Model.mat` is the required source-model input for `P2_Exp02` and `P3_Exp01`.
 
 ## Dependencies
 

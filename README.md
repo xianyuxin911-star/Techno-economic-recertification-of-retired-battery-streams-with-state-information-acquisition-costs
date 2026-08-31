@@ -26,16 +26,16 @@ P1_Exp02: source CNN training
         +-------------------------------+
         |                               |
         v                               v
-P2_Exp01: target-data preparation   P2_Exp05: selected L2-SP predictor
+P2_Exp01: target-data preparation   P2_Exp02: selected L2-SP predictor
         |
         v
 P3_Exp01: nested-resampling L2-SP prediction and error evaluation
         |
         v
-P3_Exp03: label-dependent residual extrapolation
+P3_Exp02: label-dependent residual extrapolation
         |
         v
-P3_Exp03_ResidualExtrapolation_Model.mat
+P3_Exp02_ResidualExtrapolation_Model.mat
         |
         +-------------------------------+
         |                               |
@@ -47,7 +47,7 @@ Part 4: fixed-scale TEA           Part 5: varied-scale TEA
                   Main Figs. 2b–5g
 ```
 
-`P2_Exp05` is retained as the transparent implementation of the selected L2-SP transfer-learning predictor. The error model used by the TEA is generated independently by `P3_Exp01`, which applies the same L2-SP approach inside nested resampling.
+`P2_Exp02` is retained as the transparent implementation of the selected L2-SP transfer-learning predictor. The error model used by the TEA is generated independently by `P3_Exp01`, which applies the same L2-SP approach inside nested resampling.
 
 ## Retained scripts and main-figure mapping
 
@@ -56,9 +56,9 @@ Part 4: fixed-scale TEA           Part 5: varied-scale TEA
 | 1 | `P1_Exp01_SourceDomain_QVPreprocessing.m` | Prepare the source-domain CNN dataset |
 | 1 | `P1_Exp02_SourceDomain_CNNTraining_CV.m` | Train the source CNN used by Part 3 |
 | 2 | `P2_Exp01_target_data_processing.m` | Prepare the target-pack dataset used by Part 3 |
-| 2 | `P2_Exp05_fine_tuning_L2SP_attention_prediction.m` | Selected target-domain predictor |
+| 2 | `P2_Exp02_fine_tuning_L2SP_attention_prediction.m` | Selected target-domain predictor |
 | 3 | `P3_Exp01_NestedResampling_ErrorEvaluation.m` | Generate label-dependent prediction residuals |
-| 3 | `P3_Exp03_label_dependent_residual_extrapolation.m` | Export the residual model consumed by Parts 4 and 5 |
+| 3 | `P3_Exp02_label_dependent_residual_extrapolation.m` | Export the residual model consumed by Parts 4 and 5 |
 | 4 | `P4_Exp01_fixed_scale_LFP_optimization.m` | Main Fig. 2b–e and Main Fig. 3a–b |
 | 4 | `P4_Exp02_fixed_scale_NMC_optimization.m` | Main Fig. 3c–d |
 | 4 | `P4_Exp03_chemistry_comparison_summary_plots.m` | Main Fig. 3e–f |
@@ -89,11 +89,11 @@ P1_Exp02_SourceDomain_CNNTraining_CV
 
 % Part 2
 P2_Exp01_target_data_processing
-P2_Exp05_fine_tuning_L2SP_attention_prediction   % selected-method reference
+P2_Exp02_fine_tuning_L2SP_attention_prediction   % selected-method reference
 
 % Part 3
 P3_Exp01_NestedResampling_ErrorEvaluation
-P3_Exp03_label_dependent_residual_extrapolation
+P3_Exp02_label_dependent_residual_extrapolation
 
 % Part 4
 P4_Exp01_fixed_scale_LFP_optimization
@@ -112,7 +112,7 @@ Part 3 produces:
 
 ```text
 Part3_Prediction error extrapolation/Output/Results/
-    P3_Exp03_ResidualExtrapolation_Model.mat
+    P3_Exp02_ResidualExtrapolation_Model.mat
 ```
 
 This file is the direct prediction-to-TEA interface consumed by Parts 4 and 5.

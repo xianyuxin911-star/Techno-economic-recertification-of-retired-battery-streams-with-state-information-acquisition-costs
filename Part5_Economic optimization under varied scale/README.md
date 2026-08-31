@@ -9,7 +9,7 @@ Part 5 reproduces the scale-dependent LFP and NMC results in Main Figs. 4a–5g.
 ```text
 Input/LFP_SOH_Table.mat
 Input/NMC_SOH_Table.mat
-../Part3_Prediction error extrapolation/Output/Results/P3_Exp03_ResidualExtrapolation_Model.mat
+../Part3_Prediction error extrapolation/Output/Results/P3_Exp02_ResidualExtrapolation_Model.mat
 Function/local_build_noise_by_k.m
 ```
 

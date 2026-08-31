@@ -9,7 +9,7 @@ Part 4 combines the Part 3 prediction-error model with chemistry-specific action
 ```text
 Input/LFP_SOH_Table.mat
 Input/NMC_SOH_Table.mat
-../Part3_Prediction error extrapolation/Output/Results/P3_Exp03_ResidualExtrapolation_Model.mat
+../Part3_Prediction error extrapolation/Output/Results/P3_Exp02_ResidualExtrapolation_Model.mat
 Function/local_build_noise_by_k.m
 ```
 

@@ -8,7 +8,7 @@ Part 2 retains only the target-pack data preparation and the selected L2-SP tran
 
 ```matlab
 P2_Exp01_target_data_processing
-P2_Exp05_fine_tuning_L2SP_attention_prediction
+P2_Exp02_fine_tuning_L2SP_attention_prediction
 ```
 
 ### `P2_Exp01_target_data_processing.m`
@@ -27,7 +27,7 @@ Output/Data/P2_Exp01_TargetPack_Input.mat
 
 This processed target-pack dataset is the required input for the nested-resampling experiment in Part 3.
 
-### `P2_Exp05_fine_tuning_L2SP_attention_prediction.m`
+### `P2_Exp02_fine_tuning_L2SP_attention_prediction.m`
 
 Reads:
 
@@ -38,7 +38,7 @@ Output/Data/P2_Exp01_TargetPack_Input.mat
 
 Produces the selected L2-SP target-domain prediction results under `Output/Results/`.
 
-`P2_Exp05` documents the final transfer-learning method. It is not an intermediate-file dependency of Part 3: `P3_Exp01` applies the same L2-SP formulation directly inside nested resampling so that label-dependent residuals can be estimated.
+`P2_Exp02` documents the final transfer-learning method. It is not an intermediate-file dependency of Part 3: `P3_Exp01` applies the same L2-SP formulation directly inside nested resampling so that label-dependent residuals can be estimated.
 
 ## Public-release boundary
 

@@ -15,7 +15,7 @@ Part 3 is the prediction-to-TEA bridge. It estimates how target-pack SOH predict
 
 ```matlab
 P3_Exp01_NestedResampling_ErrorEvaluation
-P3_Exp03_label_dependent_residual_extrapolation
+P3_Exp02_label_dependent_residual_extrapolation
 ```
 
 ### `P3_Exp01_NestedResampling_ErrorEvaluation.m`
@@ -32,7 +32,7 @@ Output/Results/P3_Exp01_NestedResampling_Summary.csv
 
 This is the most computationally intensive step.
 
-### `P3_Exp03_label_dependent_residual_extrapolation.m`
+### `P3_Exp02_label_dependent_residual_extrapolation.m`
 
 Reads:
 
@@ -43,16 +43,16 @@ Output/Results/P3_Exp01_NestedResampling_Final.mat
 Produces:
 
 ```text
-Output/Results/P3_Exp03_ResidualExtrapolation_EmpiricalFeatures_k5_k21.csv
-Output/Results/P3_Exp03_ResidualExtrapolation_Params_k5_k50.csv
-Output/Results/P3_Exp03_CoreRegionFeatures_PM_PR_SigmaR_k5_k50.csv
-Output/Results/P3_Exp03_ResidualExtrapolation_Model.mat
+Output/Results/P3_Exp02_ResidualExtrapolation_EmpiricalFeatures_k5_k21.csv
+Output/Results/P3_Exp02_ResidualExtrapolation_Params_k5_k50.csv
+Output/Results/P3_Exp02_CoreRegionFeatures_PM_PR_SigmaR_k5_k50.csv
+Output/Results/P3_Exp02_ResidualExtrapolation_Model.mat
 ```
 
-`P3_Exp03_ResidualExtrapolation_Model.mat` is the principal Part 3 output and is loaded directly by the fixed- and varied-scale TEA scripts.
+`P3_Exp02_ResidualExtrapolation_Model.mat` is the principal Part 3 output and is loaded directly by the fixed- and varied-scale TEA scripts.
 
 ## Public-release boundary
 
-The standalone prediction-error summary and residual-region-boundary robustness scripts are not included because they produce secondary or supplementary results and are not inputs to `P3_Exp03`.
+The standalone prediction-error summary and residual-region-boundary robustness scripts are not included because they produce secondary or supplementary results and are not inputs to `P3_Exp02`.
 
 Generated `Output/` and `Figures/` directories are excluded from version control.
